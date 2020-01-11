@@ -1,0 +1,19 @@
+# Site settings
+title: ZHAO Tianye's Blog
+email: zyz9066@yahoo.com
+description: "This site is designed to present CS knowledge to learners in a clear, concise way, and provide a resource and reference for those that are new to CS."
+baseurl: "/personal-blog"
+url: "http://zyz9066.github.io/personal-blog"
+twitter_username: zyz9066
+github_username:  zyz9066
+tagline: "A personal blog for CS learners"
+
+# Build settings
+markdown: kramdown
+kramdown:
+  auto_ids: false
+paginate: 10
+paginate_path: '/blog/page:num/'
+permalink: /blog/:title
+plugins:
+  - jekyll-paginate
