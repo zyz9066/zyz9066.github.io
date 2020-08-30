@@ -5,7 +5,7 @@ date:   2020-08-30 16:11:03 -0400
 categories: statistical learning
 ---
 # Logistic Regression and Classification
-Logistic regression is a machine learning classification algorithm used to assign observations to a discrete set of classes. Some of the well known examples of this kind of classification are **email spam or ham, transactions fraud, tumor malignant or benign**. Given a feature vector *X* and a qualitative response *Y* taking values in the set $$ C={C_1, ..., C_k} $$,
+Logistic regression is a machine learning classification algorithm used to assign observations to a discrete set of classes. Some of the well known examples of this kind of classification are **email spam or ham, transactions fraud, tumor malignant or benign**. Given a feature vector *X* and a qualitative response *Y* taking values in the set *C={C_1, ..., C_k}*, a classification task is to build a function $$f:X\to Y$$ (classifier) that takes the feature vector $$X$$ as input and predicts the value for $$Y$$, i.e. $$Y\in C$$.
 
 {% highlight ruby %}
 def print_hi(name)
