@@ -75,128 +75,136 @@ There are many known techniques and here I implement my own procedure which is a
 Here I provide an implementation in the simple case where there is only one feature variable $$x_1$$. I have uploaded the data set [SAheart.data](https://github.com/zyz9066/Statistical-Learning/blob/master/logistic%20regression/SAheart.data "GitHub link") on GitHub, the task here is to predict the value of the variable *chd* (response, coronary heart disease diagnosis) from the feature value *ldl* (low density lipoprotein cholesterol). I use the first 100 rows for training and any values in the remaining rows for testing. Following procedures are identified:
 
 - Load and clean data.
-{% highlight r %}
-  # Load data
-  data <- read.csv('SAheart.data')
-  data <- data[, c('ldl','chd')]
 
-  # remove NA rows
-  data <- na.omit(data)
-{% endhighlight %}
+```r
+# Load data
+data <- read.csv('SAheart.data')
+data <- data[, c('ldl','chd')]
+
+# remove NA rows
+data <- na.omit(data)
+```
 
 - Normalize the feature variable $$x_1$$ (see [Nota-Bene](#nota-bene "Nota-Bene") below).
-{% highlight r %}
-  # Normalize the feature variable
-  normalize <- function(x) { (x - mean(x)) / sd(x) }
-  data['ldl'] <- lapply(data['ldl'], normalize)
-{% endhighlight %}
+
+```r
+# Normalize the feature variable
+normalize <- function(x) { (x - mean(x)) / sd(x) }
+data['ldl'] <- lapply(data['ldl'], normalize)
+```
 
 - Split training data and test data.
-{% highlight r %}
-  # Train test split
-  train <- data[1:100, ]
-  test <- tail(data, -100)
 
-  X_train <- train$ldl
-  y_train <- train$chd
-  X_test <- test$ldl
-  y_test <- test$chd
-{% endhighlight %}
+```r
+# Train test split
+train <- data[1:100, ]
+test <- tail(data, -100)
+
+X_train <- train$ldl
+y_train <- train$chd
+X_test <- test$ldl
+y_test <- test$chd
+```
 
 - Calculate objective function $$\ell(\beta_0, \beta_1)$$.
-{% highlight r %}
-  # Sigmoid function
-  sigmoid <- function(w) { 1/(1+exp(-w)) }
 
-  # Objective Function
-  cost <- function(beta, X, y) {
-      p <- sigmoid(X %*% beta)
-      t(y)%*%log(p) + t(1-y)%*%log(1-p)
-  }
-{% endhighlight %}
+```r
+# Sigmoid function
+sigmoid <- function(w) { 1/(1+exp(-w)) }
+
+# Objective Function
+cost <- function(beta, X, y) {
+    p <- sigmoid(X %*% beta)
+    t(y)%*%log(p) + t(1-y)%*%log(1-p)
+}
+```
 
 - Calculate gradient function $$\nabla\ell(\beta_0, \beta_1)$$.
-{% highlight r %}
-  # Gradient function
-  grad <- function(beta, X, y) {
-      t(X) %*% (y - sigmoid(X%*%beta))
-  }
-{% endhighlight %}
+
+```r
+# Gradient function
+grad <- function(beta, X, y) {
+    t(X) %*% (y - sigmoid(X%*%beta))
+}
+```
 
 - Create logistic regression and complete implementation of gradient ascent. It is much better to look ar the convergence of the values $$\ell(\beta_0, \beta_1)$$ than the convergence of the parameters themselves.
-{% highlight r %}
-  # Fit logistic regression, set learning coefficient and tolerance term
-  fit_logit <- function(X, y, bias=T, eta=10e-3, eps=10e-6, max_iters=200) {
-      # Type conversion
-      if (!is.matrix(X)) { X <- as.matrix(X) }
-      if (!is.matrix(y)) { y <- as.matrix(y) }
 
-      # Add bias
-      if (bias) { X <- cbind(1, X) }
+```r
+# Fit logistic regression, set learning coefficient and tolerance term
+fit_logit <- function(X, y, bias=T, eta=10e-3, eps=10e-6, max_iters=200) {
+    # Type conversion
+    if (!is.matrix(X)) { X <- as.matrix(X) }
+    if (!is.matrix(y)) { y <- as.matrix(y) }
 
-      # Algorithm initialization
-      iters <- 0
+    # Add bias
+    if (bias) { X <- cbind(1, X) }
 
-      # Initialize beta to 0
-      beta <- matrix(0, ncol(X))
-      prev_cost <- cost(beta, X, y)
+    # Algorithm initialization
+    iters <- 0
 
-      # Update the beta using gradient ascent until converaged or reach max iterations
-      while (iters < max_iters) {
-          iters <- iters+1
-          # Compute the gradient and update beta
-          beta <- beta + eta*grad(beta, X, y)
+    # Initialize beta to 0
+    beta <- matrix(0, ncol(X))
+    prev_cost <- cost(beta, X, y)
 
-          curr_cost <- cost(beta, X, y)
-          # Check whether converaged
-          if (abs(curr_cost-prev_cost) < eps) { break }
+    # Update the beta using gradient ascent until converaged or reach max iterations
+    while (iters < max_iters) {
+        iters <- iters+1
+        # Compute the gradient and update beta
+        beta <- beta + eta*grad(beta, X, y)
 
-          prev_cost <- curr_cost
-      }
-      # Create the logit Object
-      logit <- list(bias=bias)
-      logit[['beta']] <- beta
-      logit[['probs']] <- sigmoid(X%*%beta)
-      logit[['residuals']] <- y - logit[['probs']]
-      logit[['preds']] <- ifelse(logit[['probs']] > .5, 1, 0)
-      logit[['score']] <- sum(logit[['preds']] == y)/nrow(y)
-      logit[['iters']] <- iters
-      attr(logit, 'class') <- 'logit'
-      logit
-  }
-{% endhighlight %}
+        curr_cost <- cost(beta, X, y)
+        # Check whether converaged
+        if (abs(curr_cost-prev_cost) < eps) { break }
+
+        prev_cost <- curr_cost
+    }
+    # Create the logit Object
+    logit <- list(bias=bias)
+    logit[['beta']] <- beta
+    logit[['probs']] <- sigmoid(X%*%beta)
+    logit[['residuals']] <- y - logit[['probs']]
+    logit[['preds']] <- ifelse(logit[['probs']] > .5, 1, 0)
+    logit[['score']] <- sum(logit[['preds']] == y)/nrow(y)
+    logit[['iters']] <- iters
+    attr(logit, 'class') <- 'logit'
+    logit
+}
+```
 
 - Predict the labels for a set of test examples.
-{% highlight r %}
-  # Predict on new data
-  predict.logit <- function(logit, X, probs=F, ..) {
-      if (!is.matrix(X)) { X <- as.matrix(X) }
-      if (logit[['bias']]) { X <- cbind(1, X) }
-      if (probs) { sigmoid(X%*%logit[['beta']]) }
-      else { ifelse(sigmoid(X%*%logit[['beta']]) > .5, 1, 0) }
-  }
-{% endhighlight %}
+
+```r
+# Predict on new data
+predict.logit <- function(logit, X, probs=F, ..) {
+    if (!is.matrix(X)) { X <- as.matrix(X) }
+    if (logit[['bias']]) { X <- cbind(1, X) }
+    if (probs) { sigmoid(X%*%logit[['beta']]) }
+    else { ifelse(sigmoid(X%*%logit[['beta']]) > .5, 1, 0) }
+}
+```
 
 - Try different learning rate $$\eta$$ values.
-{% highlight r %}
-  # Score function
-  score <- function(y_pred, y) {
-      if (!is.matrix(y_pred)) { y_pred <- as.matrix(y_pred) }
-      if (!is.matrix(y)) { y <- as.matrix(y) }
-      sum(y_pred == y)/nrow(y)
-  }
 
-  # Try different learning rate
-  etas <- list(.25, .2, .15, .1, .05, .01, .005)
+```r
+# Score function
+score <- function(y_pred, y) {
+    if (!is.matrix(y_pred)) { y_pred <- as.matrix(y_pred) }
+    if (!is.matrix(y)) { y <- as.matrix(y) }
+    sum(y_pred == y)/nrow(y)
+}
 
-  for (eta in etas) {
-      logit.fit <- fit_logit(X_train, y_train, eta=eta)
-      # Predict the labels for test examples
-      y_pred <- predict(logit.fit, X_test)
-      # print accuracy score
-      print(score(y_pred, y_test))
-  }
-{% endhighlight %}
+# Try different learning rate
+etas <- list(.25, .2, .15, .1, .05, .01, .005)
+
+for (eta in etas) {
+    logit.fit <- fit_logit(X_train, y_train, eta=eta)
+    # Predict the labels for test examples
+    y_pred <- predict(logit.fit, X_test)
+    # print accuracy score
+    print(score(y_pred, y_test))
+}
+```
 
 The output is
 
