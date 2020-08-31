@@ -4,227 +4,489 @@ title:  "Predict disease classes using genetic microarray data"
 date:   2020-08-31 11:11:03 -0400
 categories: data mining
 ---
-## Logistic Regression and Classification
-Logistic regression is a machine learning classification algorithm used to assign observations to a discrete set of classes. Some of the well known examples of this kind of classification are *email spam or ham, transactions fraud, tumor malignant or benign*. Given a feature vector $$\mathbf{X}$$ and a qualitative response $$Y$$ taking values in the set $$C=\{C_1, \cdots, C_k\}$$, a classification task is to build a function $$f:\mathbf{X}\to Y$$ (classifier) that takes the feature vector $$\mathbf{X}$$ as input and predicts the value for $$Y$$, i.e. $$Y\in C$$. The model or function or classifier $$f$$ is built using a set of training observations $$(\mathbf{x}_1, y_1), \cdots, (\mathbf{x}_n, y_n)$$ for a given $$n$$. In order to avoid crisp decisions and give to the user flexibility in the classification process, often we are more interested in estimating the **probabilities** that $$Y$$ belongs to each category in $$C$$ than estimating directly the value of $$Y$$.
+## Objective
+The purpose of this article is to show how to develop a method that uses genetic data for disease classification. Data is extracted from a DNA microarray which measures the [expression](https://en.wikipedia.org/wiki/Gene_expression "Gene Expression") levels of large numbers of genes simultaneously.
 
-Unlike linear regression where the target variable $$y$$ is related to the features via the linear relationship:
+Samples in the datasets represent patients. For each patient 7070 genes expressions (values) are measured in order to classify the patient's disease into one of the following cases: *EPD, JPA, MED, MGL, RHB*.
 
-$$\begin{equation}
-y = \beta_0 + \beta_1 x_1 + \cdots + \beta_k x_k + \epsilon,
-\end{equation}$$
+## Data
+Gene data is in genes-in-rows format, comma-separated values. There are following 3 files on my GitHub:
+- Training dataset: [*pp5i_train.gr.csv*](https://github.com/zyz9066/Data-Analysis/blob/master/Predict%20disease%20classes%20using%20genetic%20microarray%20data/pp5i_train.gr.csv)
+- Training data classes: [*pp5i_train_class.txt*](https://github.com/zyz9066/Data-Analysis/blob/master/Predict%20disease%20classes%20using%20genetic%20microarray%20data/pp5i_train_class.txt)
+- Test dataset: [*pp5i_test.gr.csv*](https://github.com/zyz9066/Data-Analysis/blob/master/Predict%20disease%20classes%20using%20genetic%20microarray%20data/pp5i_test.gr.csv)
 
-in logistic regression, we relate $$p(y)$$, the probability of $$Y$$ belonging to a certain class (which ranges between 0 and 1), to the features $$x_1, \cdots, x_k$$ via the **logistic** (or **logit**) **transformation** given by
+## Instructions
+**Training data**: file *pp5i_train.gr.csv*, with 7070 genes for 69 samples. A separate file *pp5i_train_class.txt* has classes for each sample, in the order corresponding to the order of samples in *pp5i_train.gr.cdv*.
 
-$$\begin{equation}
-\log{\frac{p(y)}{1 - p(y)}} = \beta_0 + \beta_1 x_1 + \cdots + \beta_k x_k.
-\end{equation}$$
+**Test data**: file *pp5i_test.gr.csv*, with 23 **unlabelled** samples and same genes. Assume that the class distribution is similar.
 
-To summarize, the logistic regression starts with the idea of linear regression and transforms its output using the sigmoid function to return a probability value.
+The goal is to learn the best model from the training data and use it to predict the label (class) for each sample in test data. Randomization experiments showed that one can get about 10-12 (from 23) correct answers with random guessing.
 
-### Maximum Likelihood Estimation (MLE) of the Model
-In logistic regression, our goal is to learn a set of parameters $${\beta}^T = (\beta_0, \beta_1, \cdots, \beta_k)$$ using the available estimation. Although we could use (non-linear) least squares to fit the logistic regression model, the more general method of **maximum likelihood estimation (MLE)** is preferred, since it has better statistical properties. The idea behind MLE is to choose the most likely values of the parameters $$\beta_0, \cdots, \beta_n$$ given the observed sample
+## Hints
+Be sure that don't use the sample number as one of the predictors. Training data is ordered by class, so sample number will be appear to be a good predictor on cross-validation, but it will not work on the test data.
 
-$$\begin{equation}
-{(x_1^{(i)}, \cdots, x_k^{(i)}, y_i), 1\leq i\leq n}.
-\end{equation}$$
+One of the *MED* samples in the training data is very likely misclassified (by a human). So the best result expected to get on cross-validation is one error (on a *MED* sample) out of 69. However, this doesn't affect accuracy on the test set.
 
-In logistic regression, the probability model is based on the binomial distributions:
+Here I use *Python* and its libraries. The following steps are one way of finding the best model.
 
-$$\begin{equation}
-f(\mathbf{x}_i, p_i) = f(y_i, p_i) =
-\begin{cases}
-p_i & \text{if } y_i = 1\\
-1 - p_i & \text{if } y_i = 0,
-\end{cases}
-\end{equation}$$
+## Steps
+### Read data
 
-where $$\mathbf{x}_i = (x_1^{(i)}, \cdots, x_k^{(i)})^T$$ is the vector of features and $$0 < p_i < 1$$ are the probabilities associated to the binomials in the model. In other words, the probability of the feature vector $$x_i$$ specifying the class $$y_i = 1$$ occurs with probability $$p_i$$, that is
+```python
+import pandas as pd
 
-$$\begin{equation}
-p(y_i = 1) = p_i = \frac{e^{\beta_0 + \beta_1 x_1^{(i)} + \cdots + \beta_k x_k^{(i)}}}{1 + e^{\beta_0 + \beta_1 x_1^{(i)} + \cdots + \beta_k x_k^{(i)}}} = \frac{e^{x_i^T \beta}}{1 + e^{x_i^T \beta}}
-\end{equation}$$
-
-where $${\beta} = (\beta_0, \beta_1, \cdots, \beta_k)^T$$ and $$\mathbf{x}_i = (1, x_1^{(i)}, \cdots, x_k^{(i)})^T$$ for $$1\leq i\leq n$$.
-
-Typically, numerical approximations and optimization procedures are used to find the (best) vector $${\beta}^*$$ satisfying
-
-$$\begin{equation}
-{\beta}^* = \text{argmax}(\ell({\beta}))
-\end{equation}$$
-
-There are many known techniques and here I implement my own procedure which is a *logistic regression classifier using gradient ascent* as illustrated in the following algorithm.
-
-<pre id="gradientascent" style="display:hidden;">
-    % gradient ascent algorithm
-    \begin{algorithm}
-    \caption{Algorithm for finding ${\beta}^*$}
-    \begin{algorithmic}
-    \STATE Set $\eta\in [0, 1]$ (learning coefficient)
-    \STATE Set $\epsilon > 0$ (tolerance term)
-    \STATE ${\beta}^{(0)}\leftarrow initial\_value$
-    \FOR{$t = 0, 1, \cdots$}
-        \STATE Compute the gradient: $g_t = \nabla\ell({\beta}^{(t)})$
-        \STATE Update the coefficients: ${\beta}^{(t+1)}\leftarrow {\beta}^{(t)} + \eta g_t$
-        \STATE Iterate until: $||{\beta}^{(t+1)} - {\beta}^{(t)}|| < \epsilon$.
-    \ENDFOR
-    \RETURN ${\beta}^{(t^\text{final})}$ (final coefficients)
-    \end{algorithmic}
-    \end{algorithm}
-</pre>
-
-Here I provide an implementation in the simple case where there is only one feature variable $$x_1$$. I have uploaded the data set [SAheart.data](https://github.com/zyz9066/Statistical-Learning/blob/master/logistic%20regression/SAheart.data "GitHub link") on GitHub, the task here is to predict the value of the variable *chd* (response, coronary heart disease diagnosis) from the feature value *ldl* (low density lipoprotein cholesterol). I use the first 100 rows for training and any values in the remaining rows for testing. Following procedures are identified:
-
-- Load and clean data.
-
-```r
-# Load data
-data <- read.csv('SAheart.data')
-data <- data[, c('ldl','chd')]
-
-# remove NA rows
-data <- na.omit(data)
+train_data = pd.read_csv('pp5i_train.gr.csv', index_col=0)
+test_data = pd.read_csv('pp5i_test.gr.csv', index_col=0)
+train_class = pd.read_csv('pp5i_train_class.txt')
+train_class['Class'].value_counts()
 ```
 
-- Normalize the feature variable $$x_1$$ (see [Nota-Bene](#nota-bene "Nota-Bene") below).
-
-```r
-# Normalize the feature variable
-normalize <- function(x) { (x - mean(x)) / sd(x) }
-data['ldl'] <- lapply(data['ldl'], normalize)
-```
-
-- Split training data and test data.
-
-```r
-# Train test split
-train <- data[1:100, ]
-test <- tail(data, -100)
-
-X_train <- train$ldl
-y_train <- train$chd
-X_test <- test$ldl
-y_test <- test$chd
-```
-
-- Calculate objective function $$\ell(\beta_0, \beta_1)$$.
-
-```r
-# Sigmoid function
-sigmoid <- function(w) { 1/(1+exp(-w)) }
-
-# Objective Function
-cost <- function(beta, X, y) {
-    p <- sigmoid(X %*% beta)
-    t(y)%*%log(p) + t(1-y)%*%log(1-p)
-}
-```
-
-- Calculate gradient function $$\nabla\ell(\beta_0, \beta_1)$$.
-
-```r
-# Gradient function
-grad <- function(beta, X, y) {
-    t(X) %*% (y - sigmoid(X%*%beta))
-}
-```
-
-- Create logistic regression and complete implementation of gradient ascent. It is much better to look ar the convergence of the values $$\ell(\beta_0, \beta_1)$$ than the convergence of the parameters themselves.
-
-```r
-# Fit logistic regression, set learning coefficient and tolerance term
-fit_logit <- function(X, y, bias=T, eta=10e-3, eps=10e-6, max_iters=200) {
-    # Type conversion
-    if (!is.matrix(X)) { X <- as.matrix(X) }
-    if (!is.matrix(y)) { y <- as.matrix(y) }
-
-    # Add bias
-    if (bias) { X <- cbind(1, X) }
-
-    # Algorithm initialization
-    iters <- 0
-
-    # Initialize beta to 0
-    beta <- matrix(0, ncol(X))
-    prev_cost <- cost(beta, X, y)
-
-    # Update the beta using gradient ascent until converaged or reach max iterations
-    while (iters < max_iters) {
-        iters <- iters+1
-        # Compute the gradient and update beta
-        beta <- beta + eta*grad(beta, X, y)
-
-        curr_cost <- cost(beta, X, y)
-        # Check whether converaged
-        if (abs(curr_cost-prev_cost) < eps) { break }
-
-        prev_cost <- curr_cost
-    }
-    # Create the logit Object
-    logit <- list(bias=bias)
-    logit[['beta']] <- beta
-    logit[['probs']] <- sigmoid(X%*%beta)
-    logit[['residuals']] <- y - logit[['probs']]
-    logit[['preds']] <- ifelse(logit[['probs']] > .5, 1, 0)
-    logit[['score']] <- sum(logit[['preds']] == y)/nrow(y)
-    logit[['iters']] <- iters
-    attr(logit, 'class') <- 'logit'
-    logit
-}
-```
-
-- Predict the labels for a set of test examples.
-
-```r
-# Predict on new data
-predict.logit <- function(logit, X, probs=F, ..) {
-    if (!is.matrix(X)) { X <- as.matrix(X) }
-    if (logit[['bias']]) { X <- cbind(1, X) }
-    if (probs) { sigmoid(X%*%logit[['beta']]) }
-    else { ifelse(sigmoid(X%*%logit[['beta']]) > .5, 1, 0) }
-}
-```
-
-- Try different learning rate $$\eta$$ values.
-
-```r
-# Score function
-score <- function(y_pred, y) {
-    if (!is.matrix(y_pred)) { y_pred <- as.matrix(y_pred) }
-    if (!is.matrix(y)) { y <- as.matrix(y) }
-    sum(y_pred == y)/nrow(y)
-}
-
-# Try different learning rate
-etas <- list(.25, .2, .15, .1, .05, .01, .005)
-
-for (eta in etas) {
-    logit.fit <- fit_logit(X_train, y_train, eta=eta)
-    # Predict the labels for test examples
-    y_pred <- predict(logit.fit, X_test)
-    # print accuracy score
-    print(score(y_pred, y_test))
-}
-```
-
-The output is
+The class distribution as follows:
 
 ```sh
-[1] 0.3314917
-[1] 0.3259669
-[1] 0.4585635
-[1] 0.6657459
-[1] 0.6823204
-[1] 0.6823204
-[1] 0.6823204
+MED    39
+EPD    10
+MGL     7
+RHB     7
+JPA     6
+Name: Class, dtype: int64
 ```
 
-## References
-- [An Introduction to Statistical Learning with Applications in R](http://faculty.marshall.usc.edu/gareth-james/ISL/ "Statistical Learning book")
-- [Probability & Statistics for Engineers & Scientists](http://www.elcom-hu.com/Mshtrk/Statstics/9th%20txt%20book.pdf "Statistic book")
+### Data Cleaning
+Threshold both train and test data to a minimum value of 20, maximum of 16,000. Remove null values.
 
-## Nota-Bene
-In machine learning, it is a standard routine to normalize or scale the feature variables to speed up the convergence of the learning algorithms and to ensure that the features contribute equally to the learning task. One way to achieve the normalization if by making the values of each feature in the data have zero mean (when subtracting the mean in the numerator) and unit variance, i.e., replace the variable $$x_1$$ with $$\frac{x_1 - \mu}{\sigma}$$, where $$\mu$$ and $$\sigma$$ are respectively the mean and the standard deviation of the values of $$x_1$$ in the training data.
+```python
+import numpy as np
 
-<script>
-    pseudocode.renderElement(document.getElementById("gradientascent"), { lineNumber: true });
-</script>
+train_data[(train_data < 20) | (train_data > 16000)] = np.nan
+test_data[(test_data < 20) | (test_data > 16000)] = np.nan
+
+train_data_clean = train_data[(~train_data.isnull().any(1)) & (~test_data.isnull().any(1))]
+test_data_clean = test_data[(~train_data.isnull().any(1)) & (~test_data.isnull().any(1))]
+```
+
+### Select top genes by class
+- Remove from train data genes with fold differences across samples less than 2. Fold difference is defined as a ratio between maximum and minimum values (Max/Min) for a given data set.
+
+```python
+train_data_fold = train_data_clean[train_data_clean.apply(lambda x: x.max()/x.min() > 2, axis=1)]
+```
+- For each class, generate subsets with top 2, 4, 6, 8, 10, 12, 15, 20, 25, and 30 top genes with the highest absolute [T-value](https://www.biologyforlife.com/t-test.html "T-test"). The Objective is to find for each class the set of best genes to discriminate it from the other classes.
+
+```python
+from scipy import stats
+
+classes = np.unique(train_class.values)
+
+t_values = pd.DataFrame(index=train_data_fold.index.tolist())
+for label in classes:
+  for gene in train_data_fold.index.tolist():
+    cur_samples = train_data_fold.loc[gene][np.ravel((train_class==label).values.tolist())]
+    rest_samples = train_data_fold.loc[gene][np.ravel((train_class!=label).values.tolist())]
+    t_values.loc[gene, label] = abs(stats.ttest_ind(cur_samples, rest_samples,
+                                                    equal_var=False, nan_policy='raise')[0])
+```
+
+- For $$N = 2, 4, 6, 8, 10, 12, 15, 20, 25, 30$$ combine top genes for each class into one file (removing duplicates, if any) and call the resulting file *pp5i_train.topN.gr.csv*. Add the class as the last column, remove sample no, transpose each file to "gene-in-columns" format.
+
+```python
+N = [2,4,6,8,10,12,15,20,25,30]
+
+for n in N:
+  top_genes = set()
+  for label in classes:
+    top_genes.update(t_values.sort_values(label, ascending=False).head(n).index.tolist())
+  pd.concat([train_data_fold.loc[list(top_genes), :].T.reset_index(drop=True), train_class],
+            axis=1).to_csv('pp5i_train.top'+str(n)+'.gr.csv', index=False)
+```
+
+### Find the best classifier/best gene set combination
+Use following classifiers:
+- Naïve Bayes
+- Decision Tree
+- K-NN
+- Neural Network
+- Random Forest
+
+For each classifier, using default settings, measure classifier accuracy on the training set using previously generated files with top $$N = 2, 4, 6, 8, 10, 12, 15, 20, 25, 30$$ genes.
+
+Select the model and the gene set with the lowest cross-validation error. Cross-validation is the main tool to measure classification accuracy. In [*Scikit-learn*](https://scikit-learn.org/stable/modules/cross_validation.html "cross-validation"), it shows how it can be calculated.
+
+Once found the gene set with the lowest cross-validation error, vary 1-2 additional relevant parameters for each classifier to improve the accuracy.
+
+#### Naïve Bayes
+
+```python
+from sklearn.naive_bayes import GaussianNB
+from sklearn.model_selection import cross_val_score
+
+GNBclf = GaussianNB()
+
+def search_gene(clf):
+    best_score = 0
+    accuracy = []
+    for n in N:
+        scores = cross_val_score(GNBclf, globals()['x_train%s'%n], globals()['y_train%s'%n], cv=5, n_jobs=-1)
+        score = scores.mean()
+        accuracy.append(score)
+        print("N=%d accuracy: %0.2f (+/- %0.2f)" % (n, score, scores.std() * 2))
+        best_n = n if score > best_score else best_n
+        best_score = score if score > best_score else best_score
+    return best_n, accuracy
+
+best_n, scores = search_gene(GNBclf)
+```
+
+```sh
+N=2 accuracy: 0.94 (+/- 0.11)
+N=4 accuracy: 0.92 (+/- 0.14)
+N=6 accuracy: 0.95 (+/- 0.10)
+N=8 accuracy: 0.95 (+/- 0.10)
+N=10 accuracy: 0.95 (+/- 0.10)
+N=12 accuracy: 0.93 (+/- 0.08)
+N=15 accuracy: 0.92 (+/- 0.11)
+N=20 accuracy: 0.93 (+/- 0.08)
+N=25 accuracy: 0.95 (+/- 0.10)
+N=30 accuracy: 0.95 (+/- 0.10)
+```
+
+Next, try different types of naïve bayes:
+
+```python
+from sklearn.naive_bayes import MultinomialNB, ComplementNB, BernoulliNB
+
+MNBclf = MultinomialNB()
+CNBclf = ComplementNB()
+BNBclf = BernoulliNB()
+
+for c in ['G', 'M', 'C', 'B']:
+    scores = cross_val_score(globals()[c+'NBclf'], globals()['x_train%s' % best_n], globals()['y_train%s' % best_n], cv=5, n_jobs=-1)
+    print("N=%d %sNBclf accuracy: %0.2f (+/- %0.2f)" % (best_n, c, scores.mean(), scores.std() * 2))
+```
+
+```sh
+N=6 GNBclf accuracy: 0.95 (+/- 0.10)
+N=6 MNBclf accuracy: 0.96 (+/- 0.11)
+N=6 CNBclf accuracy: 0.86 (+/- 0.12)
+N=6 BNBclf accuracy: 0.57 (+/- 0.09)
+```
+
+#### Decision Tree
+
+```python
+from sklearn.tree import DecisionTreeClassifier
+
+DTclf = DecisionTreeClassifier()
+
+best_n, scores = search_gene(DTclf)
+```
+
+```sh
+N=2 accuracy: 0.78 (+/- 0.31)
+N=4 accuracy: 0.78 (+/- 0.20)
+N=6 accuracy: 0.80 (+/- 0.29)
+N=8 accuracy: 0.84 (+/- 0.31)
+N=10 accuracy: 0.80 (+/- 0.29)
+N=12 accuracy: 0.79 (+/- 0.21)
+N=15 accuracy: 0.72 (+/- 0.35)
+N=20 accuracy: 0.82 (+/- 0.27)
+N=25 accuracy: 0.69 (+/- 0.37)
+N=30 accuracy: 0.73 (+/- 0.29)
+```
+
+Then search for best parameters in decision tree model:
+
+```python
+from sklearn.model_selection import GridSearchCV
+
+
+params = {
+    'max_depth': [30, 60, 90, None],
+    'class_weight': ['balanced', None]
+}
+
+def print_results(results):
+    print('Best Params: {}\n'.format(results.best_params_))
+    means = results.cv_results_['mean_test_score']
+    stds = results.cv_results_['std_test_score']
+    for mean, std, params in zip(means, stds, results.cv_results_['params']):
+        print('{} (+/-{}) for {}'.format(round(mean, 2), round(std * 2, 2), params))
+
+def search_param(clf, params, n):
+    cv = GridSearchCV(clf, params, cv=5, n_jobs=-1, iid=False)
+    cv.fit(globals()['x_train%s' % n], globals()['y_train%s' % n])
+
+    print('N=%s:' % n)    
+    print_results(cv)
+
+search_param(DTclf, params, best_n)
+```
+
+```sh
+N=8:
+Best Params: {'class_weight': None, 'max_depth': 30}
+
+0.81 (+/-0.19) for {'class_weight': 'balanced', 'max_depth': 30}
+0.82 (+/-0.27) for {'class_weight': 'balanced', 'max_depth': 60}
+0.81 (+/-0.19) for {'class_weight': 'balanced', 'max_depth': 90}
+0.86 (+/-0.18) for {'class_weight': 'balanced', 'max_depth': None}
+0.89 (+/-0.14) for {'class_weight': None, 'max_depth': 30}
+0.78 (+/-0.23) for {'class_weight': None, 'max_depth': 60}
+0.76 (+/-0.34) for {'class_weight': None, 'max_depth': 90}
+0.77 (+/-0.26) for {'class_weight': None, 'max_depth': None}
+```
+
+#### K-NN
+ For K-NN, test accuracy with $$K = 2, 3, 4$$.
+
+```python
+from sklearn.neighbors import KNeighborsClassifier
+
+KNNclf = KNeighborsClassifier(n_jobs=-1)
+
+params = {
+    'n_neighbors': [2, 3, 4]
+}
+
+best_score = 0
+for n in N:
+    cv = GridSearchCV(KNNclf, params, cv=5, n_jobs=-1, iid=False)
+    cv.fit(globals()['x_train%s'%n], globals()['y_train%s'%n])
+    score = max(cv.cv_results_['mean_test_score'])
+    best_n = n if score > best_score else best_n
+    best_K = cv.best_params_['n_neighbors'] if score > best_score else best_K
+    best_score = score if score > best_score else best_score
+    print('N=%s:'%n)
+    print_results(cv)
+```
+
+```sh
+N=2:
+Best Params: {'n_neighbors': 4}
+
+0.93 (+/-0.15) for {'n_neighbors': 2}
+0.95 (+/-0.1) for {'n_neighbors': 3}
+0.96 (+/-0.11) for {'n_neighbors': 4}
+N=4:
+Best Params: {'n_neighbors': 3}
+
+0.9 (+/-0.07) for {'n_neighbors': 2}
+0.93 (+/-0.02) for {'n_neighbors': 3}
+0.93 (+/-0.02) for {'n_neighbors': 4}
+N=6:
+Best Params: {'n_neighbors': 4}
+
+0.91 (+/-0.07) for {'n_neighbors': 2}
+0.93 (+/-0.02) for {'n_neighbors': 3}
+0.94 (+/-0.06) for {'n_neighbors': 4}
+N=8:
+Best Params: {'n_neighbors': 3}
+
+0.89 (+/-0.14) for {'n_neighbors': 2}
+0.93 (+/-0.08) for {'n_neighbors': 3}
+0.92 (+/-0.09) for {'n_neighbors': 4}
+N=10:
+Best Params: {'n_neighbors': 3}
+
+0.9 (+/-0.13) for {'n_neighbors': 2}
+0.93 (+/-0.08) for {'n_neighbors': 3}
+0.9 (+/-0.05) for {'n_neighbors': 4}
+N=12:
+Best Params: {'n_neighbors': 2}
+
+0.92 (+/-0.09) for {'n_neighbors': 2}
+0.9 (+/-0.08) for {'n_neighbors': 3}
+0.9 (+/-0.05) for {'n_neighbors': 4}
+N=15:
+Best Params: {'n_neighbors': 3}
+
+0.86 (+/-0.16) for {'n_neighbors': 2}
+0.9 (+/-0.08) for {'n_neighbors': 3}
+0.9 (+/-0.08) for {'n_neighbors': 4}
+N=20:
+Best Params: {'n_neighbors': 4}
+
+0.89 (+/-0.2) for {'n_neighbors': 2}
+0.86 (+/-0.07) for {'n_neighbors': 3}
+0.89 (+/-0.15) for {'n_neighbors': 4}
+N=25:
+Best Params: {'n_neighbors': 4}
+
+0.89 (+/-0.18) for {'n_neighbors': 2}
+0.89 (+/-0.1) for {'n_neighbors': 3}
+0.92 (+/-0.09) for {'n_neighbors': 4}
+N=30:
+Best Params: {'n_neighbors': 2}
+
+0.93 (+/-0.12) for {'n_neighbors': 2}
+0.89 (+/-0.1) for {'n_neighbors': 3}
+0.92 (+/-0.09) for {'n_neighbors': 4}
+```
+
+```python
+KNN4clf = KNeighborsClassifier(n_neighbors=4, n_jobs=-1)
+
+params = {
+    'n_neighbors': [2, 3, 4],
+    'weights' : ['uniform', 'distance']
+}
+
+search_param(KNN4clf, params, best_n)
+```
+
+```sh
+N=2:
+Best Params: {'n_neighbors': 4, 'weights': 'uniform'}
+
+0.93 (+/-0.15) for {'n_neighbors': 2, 'weights': 'uniform'}
+0.93 (+/-0.13) for {'n_neighbors': 2, 'weights': 'distance'}
+0.95 (+/-0.1) for {'n_neighbors': 3, 'weights': 'uniform'}
+0.95 (+/-0.1) for {'n_neighbors': 3, 'weights': 'distance'}
+0.96 (+/-0.11) for {'n_neighbors': 4, 'weights': 'uniform'}
+0.95 (+/-0.1) for {'n_neighbors': 4, 'weights': 'distance'}
+```
+
+#### Neural Network
+
+```python
+from sklearn.neural_network import MLPClassifier
+
+NNclf = MLPClassifier()
+best_n, scores = search_gene(NNclf)
+```
+
+```sh
+N=2 accuracy: 0.84 (+/- 0.27)
+N=4 accuracy: 0.72 (+/- 0.43)
+N=6 accuracy: 0.88 (+/- 0.18)
+N=8 accuracy: 0.90 (+/- 0.13)
+N=10 accuracy: 0.84 (+/- 0.17)
+N=12 accuracy: 0.81 (+/- 0.27)
+N=15 accuracy: 0.86 (+/- 0.19)
+N=20 accuracy: 0.81 (+/- 0.23)
+N=25 accuracy: 0.94 (+/- 0.06)
+N=30 accuracy: 0.83 (+/- 0.11)
+```
+
+```python
+params = {
+    'hidden_layer_sizes' : [(100,), (200,), (400,)],
+    'activation' : ['identity', 'logistic', 'tanh', 'relu']
+}
+
+search_param(NNclf, params, best_n)
+```
+
+```sh
+N=8:
+Best Params: {'activation': 'logistic', 'hidden_layer_sizes': (200,)}
+
+0.83 (+/-0.21) for {'activation': 'identity', 'hidden_layer_sizes': (100,)}
+0.89 (+/-0.15) for {'activation': 'identity', 'hidden_layer_sizes': (200,)}
+0.86 (+/-0.12) for {'activation': 'identity', 'hidden_layer_sizes': (400,)}
+0.94 (+/-0.11) for {'activation': 'logistic', 'hidden_layer_sizes': (100,)}
+0.97 (+/-0.06) for {'activation': 'logistic', 'hidden_layer_sizes': (200,)}
+0.97 (+/-0.06) for {'activation': 'logistic', 'hidden_layer_sizes': (400,)}
+0.91 (+/-0.13) for {'activation': 'tanh', 'hidden_layer_sizes': (100,)}
+0.95 (+/-0.1) for {'activation': 'tanh', 'hidden_layer_sizes': (200,)}
+0.97 (+/-0.07) for {'activation': 'tanh', 'hidden_layer_sizes': (400,)}
+0.87 (+/-0.17) for {'activation': 'relu', 'hidden_layer_sizes': (100,)}
+0.88 (+/-0.07) for {'activation': 'relu', 'hidden_layer_sizes': (200,)}
+0.89 (+/-0.09) for {'activation': 'relu', 'hidden_layer_sizes': (400,)}
+```
+
+#### Random Forest
+
+```python
+from sklearn.ensemble import RandomForestClassifier
+
+RFclf = RandomForestClassifier(n_jobs=-1)
+best_n, scores = search_gene(RFclf)
+```
+
+```sh
+N=2 accuracy: 0.86 (+/- 0.12)
+N=4 accuracy: 0.93 (+/- 0.14)
+N=6 accuracy: 0.89 (+/- 0.17)
+N=8 accuracy: 0.94 (+/- 0.16)
+N=10 accuracy: 0.91 (+/- 0.13)
+N=12 accuracy: 0.87 (+/- 0.26)
+N=15 accuracy: 0.92 (+/- 0.14)
+N=20 accuracy: 0.89 (+/- 0.10)
+N=25 accuracy: 0.90 (+/- 0.11)
+N=30 accuracy: 0.87 (+/- 0.09)
+```
+
+```python
+params = {
+    'n_estimators': [100, 150, 300],
+    'max_depth' : [30, 60, 90, None],
+    'class_weight' : ['balanced']
+}
+
+search_param(RFclf, params, best_n)
+```
+
+```sh
+N=8:
+Best Params: {'class_weight': 'balanced', 'max_depth': 90, 'n_estimators': 150}
+
+0.95 (+/-0.1) for {'class_weight': 'balanced', 'max_depth': 30, 'n_estimators': 100}
+0.95 (+/-0.15) for {'class_weight': 'balanced', 'max_depth': 30, 'n_estimators': 150}
+0.97 (+/-0.07) for {'class_weight': 'balanced', 'max_depth': 30, 'n_estimators': 300}
+0.96 (+/-0.1) for {'class_weight': 'balanced', 'max_depth': 60, 'n_estimators': 100}
+0.97 (+/-0.07) for {'class_weight': 'balanced', 'max_depth': 60, 'n_estimators': 150}
+0.97 (+/-0.07) for {'class_weight': 'balanced', 'max_depth': 60, 'n_estimators': 300}
+0.95 (+/-0.1) for {'class_weight': 'balanced', 'max_depth': 90, 'n_estimators': 100}
+0.98 (+/-0.06) for {'class_weight': 'balanced', 'max_depth': 90, 'n_estimators': 150}
+0.97 (+/-0.07) for {'class_weight': 'balanced', 'max_depth': 90, 'n_estimators': 300}
+0.92 (+/-0.18) for {'class_weight': 'balanced', 'max_depth': None, 'n_estimators': 100}
+0.95 (+/-0.15) for {'class_weight': 'balanced', 'max_depth': None, 'n_estimators': 150}
+0.96 (+/-0.1) for {'class_weight': 'balanced', 'max_depth': None, 'n_estimators': 300}
+```
+
+Use the gene names from best train gene set and extract the data corresponding to these genes from the test set. Convert test set to "gene-in-columns" format to prepare it for classification.
+
+```python
+best_n = 8
+y_test = test_data.loc[pd.read_csv('pp5i_train.top'+str(best_n)+'.gr.csv').drop(labels='Class',
+                                                                           axis=1).columns.tolist(), :].T.reset_index(drop=True)
+```
+
+### Generate predictions for the test set
+Now have the best train file, *pp5i_train.bestN.csv*, (with 69 samples and bestN number of genes found) and a corresponding test file, *pp5i_test.bestN.csv*, with the same genes and 23 test samples.
+
+```python
+pd.read_csv('pp5i_train.top'+str(best_n)+'.gr.csv').to_csv('pp5i_train.best'+str(best_n)+'.csv', index=False)
+y_test.to_csv('pp5i_test.best'+str(best_n)+'.csv', index=False)
+```
+
+Use the best train file and the matching test file and generate predictions for the test file class.
+
+```python
+from sklearn.metrics import classification_report
+from sklearn.utils import class_weight
+
+x_train = pd.read_csv('pp5i_train.best'+str(best_n)+'.csv').drop(labels='Class', axis=1).values.tolist()
+y_train = LE.transform(np.ravel(pd.read_csv('pp5i_train.best'+str(best_n)+'.csv', usecols=['Class']).values.tolist()))
+sample_weight = class_weight.compute_sample_weight('balanced', y_train)
+
+clf = RandomForestClassifier(n_estimators=150, max_depth=90, n_jobs=-1, class_weight='balanced')
+clf.fit(x_train, y_train, sample_weight=sample_weight)
+np.savetxt('pp5i_test_class.txt', LE.inverse_transform(clf.predict(y_test)), fmt='%s')
+print(classification_report(y_train, clf.predict(x_train), target_names=classes))
+```
+
+```sh
+precision    recall  f1-score   support
+
+         EPD       1.00      1.00      1.00        10
+         JPA       1.00      1.00      1.00         6
+         MED       1.00      1.00      1.00        39
+         MGL       1.00      1.00      1.00         7
+         RHB       1.00      1.00      1.00         7
+
+   micro avg       1.00      1.00      1.00        69
+   macro avg       1.00      1.00      1.00        69
+weighted avg       1.00      1.00      1.00        69
+```
