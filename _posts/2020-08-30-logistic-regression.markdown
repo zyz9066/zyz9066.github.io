@@ -22,7 +22,7 @@ $$\begin{equation}
 To summarize, the logistic regression starts with the idea of linear regression and transforms its output using the sigmoid function to return a probability value.
 
 ### Maximum Likelihood Estimation (MLE) of the Model
-In logistic regression, our goal is to learn a set of parameters $$\boldsymbol{\beta}^T = (\beta_0, \beta_1, \cdots, \beta_k)$$ using the available estimation. Although we could use (non-linear) least squares to fit the logistic regression model, the more general method of **maximum likelihood estimation (MLE)** is preferred, since it has better statistical properties. The idea behind MLE is to choose the most likely values of the parameters $$\beta_0, \cdots, \beta_n$$ given the observed sample
+In logistic regression, our goal is to learn a set of parameters $${\beta}^T = (\beta_0, \beta_1, \cdots, \beta_k)$$ using the available estimation. Although we could use (non-linear) least squares to fit the logistic regression model, the more general method of **maximum likelihood estimation (MLE)** is preferred, since it has better statistical properties. The idea behind MLE is to choose the most likely values of the parameters $$\beta_0, \cdots, \beta_n$$ given the observed sample
 
 $$\begin{equation}
 {(x_1^{(i)}, \cdots, x_k^{(i)}, y_i), 1\leq i\leq n}.
@@ -44,15 +44,33 @@ $$\begin{equation}
 p(y_i = 1) = p_i = \frac{e^{\beta_0 + \beta_1 x_1^{(i)} + \cdots + \beta_k x_k^{(i)}}}{1 + e^{\beta_0 + \beta_1 x_1^{(i)} + \cdots + \beta_k x_k^{(i)}}} = \frac{e^{x_i^T \beta}}{1 + e^{x_i^T \beta}}
 \end{equation}$$
 
-where $$\boldsymbol{\beta} = (\beta_0, \beta_1, \cdots, \beta_k)^T$$ and $$\mathbf{x}_i = (1, x_1^{(i)}, \cdots, x_k^{(i)})^T$$ for $$1\leq i\leq n$$.
+where $${\beta} = (\beta_0, \beta_1, \cdots, \beta_k)^T$$ and $$\mathbf{x}_i = (1, x_1^{(i)}, \cdots, x_k^{(i)})^T$$ for $$1\leq i\leq n$$.
 
-Typically, numerical approximations and optimization procedures are used to find the (best) vector $$\boldsymbol{\beta}^*$$ satisfying
+Typically, numerical approximations and optimization procedures are used to find the (best) vector $${\beta}^*$$ satisfying
 
 $$\begin{equation}
-\boldsymbol{\beta}^* = \text{argmax}(\ell(\boldsymbol{\beta}))
+{\beta}^* = \text{argmax}(\ell({\beta}))
 \end{equation}$$
 
-There are many known techniques and here I implement my own procedure which is a *logistic regression classifier using gradient ascent*.
+There are many known techniques and here I implement my own procedure which is a *logistic regression classifier using gradient ascent* as illustrated in the following algorithm.
+
+<pre id="gradientascent" style="display:hidden;">
+    % gradient ascent algorithm
+    \begin{algorithm}
+    \caption{Algorithm for finding ${\beta}^*$}
+    \begin{algorithmic}
+    \STATE Set $\eta\in [0, 1]$ (learning coefficient)
+    \STATE Set $\epsilon > 0$ (tolerance term)
+    \STATE ${\beta}^{(0)}\leftarrow initial\_value$
+    \FOR{$t = 0, 1, \cdots$}
+        \STATE Compute the gradient: $g_t = \nabla\ell({\beta}^{(t)})$
+        \STATE Update the coefficients: ${\beta}^{(t+1)}\leftarrow {\beta}^{(t)} + \eta g_t$
+        \STATE Iterate until: $||{\beta}^{(t+1)} - {\beta}^{(t)}|| < \epsilon$.
+    \ENDFOR
+    \RETURN ${\beta}^{(t^\text{final})}$ (final coefficients)
+    \end{algorithmic}
+    \end{algorithm}
+</pre>
 
 Here I provide an implementation in the simple case where there is only one feature variable $$x_1$$. I have uploaded the data set [SAheart.data](https://github.com/zyz9066/Statistical-Learning/blob/master/logistic%20regression/SAheart.data "GitHub link") on GitHub, the task here is to predict the value of the variable *chd* (response, coronary heart disease diagnosis) from the feature value *ldl* (low density lipoprotein cholesterol). I use the first 100 rows for training and any values in the remaining rows for testing. Following procedures are identified:
 
@@ -198,3 +216,7 @@ The output is
 
 ## Nota-Bene
 In machine learning, it is a standard routine to normalize or scale the feature variables to speed up the convergence of the learning algorithms and to ensure that the features contribute equally to the learning task. One way to achieve the normalization if by making the values of each feature in the data have zero mean (when subtracting the mean in the numerator) and unit variance, i.e., replace the variable $$x_1$$ with $$\frac{x_1 - \mu}{\sigma}$$, where $$\mu$$ and $$\sigma$$ are respectively the mean and the standard deviation of the values of $$x_1$$ in the training data.
+
+<script>
+    pseudocode.renderElement(document.getElementById("gradientascent"), { lineNumber: true });
+</script>
