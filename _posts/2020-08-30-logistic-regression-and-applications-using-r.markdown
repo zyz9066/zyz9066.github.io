@@ -64,8 +64,8 @@ There are many known techniques and here I implement my own procedure which is a
     \STATE $\boldsymbol{\beta}^{(0)}\leftarrow initial\_value$
     \FOR{$t = 0, 1, \cdots$}
         \STATE Compute the gradient: $g_t = \nabla\ell(\boldsymbol{\beta}^{(t)})$
-        \STATE Update the coefficients: $boldsymbol{\beta}^{(t+1)}\leftarrow {\beta}^{(t)} + \eta g_t$
-        \STATE Iterate until: $||boldsymbol{\beta}^{(t+1)} - boldsymbol{\beta}^{(t)}|| < \epsilon$.
+        \STATE Update the coefficients: $\boldsymbol{\beta}^{(t+1)}\leftarrow \boldsymbol{\beta}^{(t)} + \eta g_t$
+        \STATE Iterate until: $||\boldsymbol{\beta}^{(t+1)} - \boldsymbol{\beta}^{(t)}|| < \epsilon$.
     \ENDFOR
     \RETURN $\boldsymbol{\beta}^{(t^\text{final})}$ (final coefficients)
     \end{algorithmic}
