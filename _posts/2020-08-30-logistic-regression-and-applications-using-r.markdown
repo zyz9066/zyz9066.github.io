@@ -22,7 +22,7 @@ $$\begin{equation}
 To summarize, the logistic regression starts with the idea of linear regression and transforms its output using the sigmoid function to return a probability value.
 
 ### Maximum Likelihood Estimation (MLE) of the Model
-In logistic regression, our goal is to learn a set of parameters $${\beta}^T = (\beta_0, \beta_1, \cdots, \beta_k)$$ using the available estimation. Although we could use (non-linear) least squares to fit the logistic regression model, the more general method of **maximum likelihood estimation (MLE)** is preferred, since it has better statistical properties. The idea behind MLE is to choose the most likely values of the parameters $$\beta_0, \cdots, \beta_n$$ given the observed sample
+In logistic regression, our goal is to learn a set of parameters $$\boldsymbol{\beta}^T = (\beta_0, \beta_1, \cdots, \beta_k)$$ using the available estimation. Although we could use (non-linear) least squares to fit the logistic regression model, the more general method of **maximum likelihood estimation (MLE)** is preferred, since it has better statistical properties. The idea behind MLE is to choose the most likely values of the parameters $$\beta_0, \cdots, \beta_n$$ given the observed sample
 
 $$\begin{equation}
 {(x_1^{(i)}, \cdots, x_k^{(i)}, y_i), 1\leq i\leq n}.
@@ -41,15 +41,15 @@ p_i & \text{if } y_i = 1\\
 where $$\mathbf{x}_i = (x_1^{(i)}, \cdots, x_k^{(i)})^T$$ is the vector of features and $$0 < p_i < 1$$ are the probabilities associated to the binomials in the model. In other words, the probability of the feature vector $$x_i$$ specifying the class $$y_i = 1$$ occurs with probability $$p_i$$, that is
 
 $$\begin{equation}
-p(y_i = 1) = p_i = \frac{e^{\beta_0 + \beta_1 x_1^{(i)} + \cdots + \beta_k x_k^{(i)}}}{1 + e^{\beta_0 + \beta_1 x_1^{(i)} + \cdots + \beta_k x_k^{(i)}}} = \frac{e^{x_i^T \beta}}{1 + e^{x_i^T \beta}}
+p(y_i = 1) = p_i = \frac{e^{\beta_0 + \beta_1 x_1^{(i)} + \cdots + \beta_k x_k^{(i)}}}{1 + e^{\beta_0 + \beta_1 x_1^{(i)} + \cdots + \beta_k x_k^{(i)}}} = \frac{e^{\mathbf{x}_i^T \boldsymbol{\beta}}}{1 + e^{\mathbf{x}_i^T \boldsymbol{\beta}}}
 \end{equation}$$
 
-where $${\beta} = (\beta_0, \beta_1, \cdots, \beta_k)^T$$ and $$\mathbf{x}_i = (1, x_1^{(i)}, \cdots, x_k^{(i)})^T$$ for $$1\leq i\leq n$$.
+where $$\boldsymbol{\beta} = (\beta_0, \beta_1, \cdots, \beta_k)^T$$ and $$\mathbf{x}_i = (1, x_1^{(i)}, \cdots, x_k^{(i)})^T$$ for $$1\leq i\leq n$$.
 
 Typically, numerical approximations and optimization procedures are used to find the (best) vector $${\beta}^*$$ satisfying
 
 $$\begin{equation}
-{\beta}^* = \text{argmax}(\ell({\beta}))
+\boldsymbol{\beta}^* = \text{argmax}(\ell(\boldsymbol{\beta}))
 \end{equation}$$
 
 There are many known techniques and here I implement my own procedure which is a *logistic regression classifier using gradient ascent* as illustrated in the following algorithm.
@@ -57,17 +57,17 @@ There are many known techniques and here I implement my own procedure which is a
 <pre id="gradientascent" style="display:hidden;">
     % gradient ascent algorithm
     \begin{algorithm}
-    \caption{Algorithm for finding ${\beta}^*$}
+    \caption{Algorithm for finding $\boldsymbol{\beta}^*$}
     \begin{algorithmic}
     \STATE Set $\eta\in [0, 1]$ (learning coefficient)
     \STATE Set $\epsilon > 0$ (tolerance term)
-    \STATE ${\beta}^{(0)}\leftarrow initial\_value$
+    \STATE $\boldsymbol{\beta}^{(0)}\leftarrow initial\_value$
     \FOR{$t = 0, 1, \cdots$}
-        \STATE Compute the gradient: $g_t = \nabla\ell({\beta}^{(t)})$
-        \STATE Update the coefficients: ${\beta}^{(t+1)}\leftarrow {\beta}^{(t)} + \eta g_t$
-        \STATE Iterate until: $||{\beta}^{(t+1)} - {\beta}^{(t)}|| < \epsilon$.
+        \STATE Compute the gradient: $g_t = \nabla\ell(\boldsymbol{\beta}^{(t)})$
+        \STATE Update the coefficients: $boldsymbol{\beta}^{(t+1)}\leftarrow {\beta}^{(t)} + \eta g_t$
+        \STATE Iterate until: $||boldsymbol{\beta}^{(t+1)} - boldsymbol{\beta}^{(t)}|| < \epsilon$.
     \ENDFOR
-    \RETURN ${\beta}^{(t^\text{final})}$ (final coefficients)
+    \RETURN $\boldsymbol{\beta}^{(t^\text{final})}$ (final coefficients)
     \end{algorithmic}
     \end{algorithm}
 </pre>
