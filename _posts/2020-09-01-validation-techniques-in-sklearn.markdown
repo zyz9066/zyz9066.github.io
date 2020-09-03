@@ -9,7 +9,7 @@ Here just test a variety of classifiers on different datasets in *sklearn*, and 
 
 ## Classification and Regression
 ### Classifiers
-- Import and load the toy datasets from *sklearn*:
+Import and load the toy datasets from *sklearn*:
 
 ```python
 import numpy as np
