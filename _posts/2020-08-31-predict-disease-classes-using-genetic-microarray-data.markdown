@@ -38,7 +38,7 @@ import pandas as pd
 train_data = pd.read_csv('pp5i_train.gr.csv', index_col=0)
 test_data = pd.read_csv('pp5i_test.gr.csv', index_col=0)
 train_class = pd.read_csv('pp5i_train_class.txt')
-train_class['Class'].value_counts()
+print(train_class['Class'].value_counts())
 ```
 
 The class distribution as follows:

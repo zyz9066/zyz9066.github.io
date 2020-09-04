@@ -125,7 +125,8 @@ Fit the model:
 from sklearn.ensemble import RandomForestClassifier
 
 clf = RandomForestClassifier()
-clf.fit(x_train, y_train).score(x_train, y_train)
+clf.fit(x_train, y_train)
+print(clf.score(x_train, y_train))
 ```
 
 Accuracy of the model:
@@ -134,8 +135,4 @@ Accuracy of the model:
 1.0
 ```
 
-Make prediction:
-
-```python
-clf.predict_proba(x_test)[:, 1]
-```
+Make prediction using `clf.predict_proba(x_test)[:, 1]`.
