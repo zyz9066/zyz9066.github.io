@@ -1,6 +1,6 @@
 ---
 layout: post
-title:  "Pattern Recognition"
+title:  "Gaussian Model"
 date:   2020-09-07 11:11:03 -0400
 categories: pattern recognition
 ---
