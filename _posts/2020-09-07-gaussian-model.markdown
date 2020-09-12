@@ -4,6 +4,7 @@ title:  "Gaussian Model"
 date:   2020-09-07 11:11:03 -0400
 categories: pattern recognition
 ---
+![](https://github.com/zyz9066/zyz9066.github.io/blob/master/images/train2.png)
 ## Bayesian decision theory
 Consider the two-dimensional data points from two classes $$\omega_1$$ and $$\omega_2$$ below, and each of them come from a Gaussian distribution $$p(x\mid\omega_k)\sim \mathcal{N}(\mu_k, \Sigma_k)$$
 
