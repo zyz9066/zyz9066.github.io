@@ -1,7 +1,7 @@
 ---
 layout: post
-title:  "Gaussian Model"
-date:   2020-09-07 11:11:03 -0400
+title:  "Pattern Recognition"
+date:   2020-12-18 11:11:03 -0400
 categories: pattern recognition
 ---
 ## Bayesian decision theory
@@ -21,45 +21,72 @@ Calculate the mean and covariance matrix for each class:
 
 ```python
 import numpy as np
+import matplotlib.pyplot as plt
+from sklearn.discriminant_analysis import QuadraticDiscriminantAnalysis
 
-w1 = np.array([(0, 0), (1, 1), (2, 2), (3, 2), (4, 2), (5, 3)])
-w2 = np.array([(6, 9), (8, 10), (9, 10), (9, 11), (10, 10), (11, 12), (12, 12), (12, 13)])
+w1 = np.array([[0, 0], [1, 1], [2, 2], [3, 2], [4, 2], [5, 3]])
+w2 = np.array([[6, 9], [8, 10], [9, 10], [9, 11], [10, 10], [11, 12], [12, 12], [12, 13]])
 
-# print mean
-print("Mean of w1: ", w1.mean(0))
-print("Mean of w2: ", w2.mean(0))
+x = np.concatenate((w1, w2))
+y = np.concatenate((np.zeros(len(w1)), np.ones(len(w2))))
 
-# print covariance matrix
-print("Covariance Matrix of w1:\n", np.cov(w1, rowvar=False))
-print("Covariance Matrix of w2:\n", np.cov(w2, rowvar=False))
+qda = QuadraticDiscriminantAnalysis(store_covariance=True)
+qda.fit(x, y)
 
-# print determinant
-print("Determinant of covariance matrix 1: %.4f" % np.linalg.det(np.cov(w1, rowvar=False)))
-print("Determinant of covariance matrix 2: %.4f" % np.linalg.det(np.cov(w2, rowvar=False)))
-
-# print inverse matrix
-print("Inverse Matrix of covariance matrix 1:\n", np.linalg.inv(np.cov(w1, rowvar=False)))
-print("Inverse Matrix of covariance matrix 2:\n", np.linalg.inv(np.cov(w2, rowvar=False)))
+print(qda.priors_)
 ```
 
 ```sh
-Mean of w1:  [2.5        1.66666667]
-Mean of w2:  [ 9.625 10.875]
-Covariance Matrix of w1:
- [[3.5        1.8       ]
- [1.8        1.06666667]]
-Covariance Matrix of w2:
- [[4.26785714 2.51785714]
- [2.51785714 1.83928571]]
-Determinant of covariance matrix 1: 0.4933
-Determinant of covariance matrix 2: 1.5102
-Inverse Matrix of covariance matrix 1:
- [[ 2.16216216 -3.64864865]
- [-3.64864865  7.09459459]]
-Inverse Matrix of covariance matrix 2:
- [[ 1.21790541 -1.66722973]
- [-1.66722973  2.82601351]]
+[0.42857143 0.57142857]
 ```
+
+```python
+print(qda.means_)
+```
+
+```sh
+[[ 2.5         1.66666667]
+ [ 9.625      10.875     ]]
+```
+
+```python
+for cov in qda.covariance_:
+    print(cov)
+```
+
+```sh
+[[3.5        1.8       ]
+ [1.8        1.06666667]]
+[[4.26785714 2.51785714]
+ [2.51785714 1.83928571]]
+```
+
+```python
+buffer = 1
+
+x1min, x1max = x[:, 0].min() - buffer, x[:, 0].max() + buffer
+x2min, x2max = x[:, 1].min() - buffer, x[:, 1].max() + buffer
+step = .02
+xx1, xx2 = np.meshgrid(np.arange(x1min, x1max, step), np.arange(x2min, x2max, step))
+z = qda.predict(np.c_[xx1.ravel(), xx2.ravel()])
+
+z = z.reshape(xx1.shape)
+
+plt.pcolormesh(xx1, xx2, z, cmap=plt.cm.Paired)
+
+plt.scatter(w1[:, 0], w1[:, 1], label='$w_1$', edgecolors='k')
+plt.scatter(w2[:, 0], w2[:, 1], label='$w_2$', edgecolors='k')
+plt.xlabel('$x_1$')
+plt.ylabel('$x_2$')
+plt.legend()
+
+plt.xlim(xx1.min(), xx1.max())
+plt.ylim(xx2.min(), xx2.max())
+
+plt.show()
+```
+
+![](https://zyz9066.github.io/images/509/boundary.png)
 
 ## Parametric models
 Consider Gaussian density models in different dimensions as following:

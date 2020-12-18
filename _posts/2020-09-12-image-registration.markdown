@@ -482,14 +482,27 @@ def search(I, J, optim='gd', lr=1e-7, gamma=0.9, beta=0.9, iters=100):
 
 optim = ['gd', 'momentum', 'nag', 'adagrad', 'rmsprop']
 for op in optim:
-    for I in [I2, I3, I4]:
-    t, u, ch = search(I1, I, optim=op, lr=1e-10, iters=900)
+    t, u, ch = search(I1, I2, optim=op, lr=1e-10, iters=900)
     plt.plot(ch, label=op)
 plt.legend()
 ```
 
 ![](https://zyz9066.github.io/images/516/2/I2gd.png)
 
+```python
+for op in optim:
+    t, u, ch = search(I1, I3, optim=op, lr=1e-10, iters=900)
+    plt.plot(ch, label=op)
+plt.legend()
+```
+
 ![](https://zyz9066.github.io/images/516/2/I3gd.png)
+
+```python
+for op in optim:
+    t, u, ch = search(I1, I4, optim=op, lr=1e-10, iters=900)
+    plt.plot(ch, label=op)
+plt.legend()
+```
 
 ![](https://zyz9066.github.io/images/516/2/I4gd.png)
