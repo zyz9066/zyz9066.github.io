@@ -17,7 +17,7 @@ Consider the two-dimensional data points from two classes $$\omega_1$$ and $$\om
 ||(12,12)|
 ||(12,13)|
 
-Calculate the mean and covariance matrix for each class:
+* The prior probability of each class, $$P(\omega_1)$$ and $$P(\omega_2)$$ are:
 
 ```python
 import numpy as np
@@ -40,6 +40,8 @@ print(qda.priors_)
 [0.42857143 0.57142857]
 ```
 
+* The mean $$\mu_k$$ for each class is:
+
 ```python
 print(qda.means_)
 ```
@@ -48,6 +50,8 @@ print(qda.means_)
 [[ 2.5         1.66666667]
  [ 9.625      10.875     ]]
 ```
+
+* The covariance matrix $$\Sigma_k$$ for each class is:
 
 ```python
 for cov in qda.covariance_:
@@ -60,6 +64,8 @@ for cov in qda.covariance_:
 [[4.26785714 2.51785714]
  [2.51785714 1.83928571]]
 ```
+
+* The decision boundary that separates the two classes draw as:
 
 ```python
 buffer = 1
@@ -92,7 +98,8 @@ plt.show()
 Consider Gaussian density models in different dimensions as following:
 
 ```python
-# raw data
+import numpy as np
+
 w1 = np.array([(0.42, -0.087, 0.58),
       (-0.2, -3.3, -3.4),
       (1.3, -0.32, 1.7),
@@ -127,111 +134,112 @@ w3 = np.array([(0.83, 1.6, -0.014),
       (0.18, -0.11, -0.49)])
 ```
 
-Then find the maximum likelihood values $$\hat{\mu}$$ and $$\hat{\sigma}^2$$ for each of the three features $$x_i$$ individually of category $$\omega_1$$ above:
+* Find the maximum likelihood values $$\hat{\mu}$$ and $$\hat{\sigma}^2$$ for each of the three features $$x_i$$ individually of category $$\omega_1$$ above:
 
 ```python
-import numpy as np
-
-print('mu1: ', w1.mean(0))
-print('var1: ', w1.var(0))
+print(w1.mean(0))
 ```
 
 ```sh
-mu1:  [-0.0709 -0.6047 -0.911 ]
-var1:  [0.90617729 4.20071481 4.541949  ]
+[-0.0709 -0.6047 -0.911 ]
 ```
 
-Then apply two-dimensional Gaussian data $$p(x)\sim \mathcal{N}(\mu, \Sigma)$$ to each of the three possible pairings of two features for $$\omega_1$$:
+```python
+print(w1.var(0))
+```
+
+```sh
+[0.90617729 4.20071481 4.541949  ]
+```
+
+* Apply two-dimensional Gaussian data $$p(x)\sim \mathcal{N}(\mu, \Sigma)$$ to each of the three possible pairings of two features for $$\omega_1$$:
 
 ```python
 from sklearn.covariance import EmpiricalCovariance
 cov = EmpiricalCovariance()
 
 cov.fit(w1[:, :-1])
-print("mu12: ", cov.location_)
-print("Sigma12:\n", cov.covariance_)
-
-cov.fit(w1[:, 1:])
-print("\nmu23: ", cov.location_)
-print("Sigma23:\n", cov.covariance_)
-
-cov.fit(w1[:, [0,-1]])
-print("\nmu13: ", cov.location_)
-print("Sigma13:\n", cov.covariance_)
+print(cov.location_)
+print(cov.covariance_)
 ```
 
 ```sh
-mu12:  [-0.0709 -0.6047]
-Sigma12:
- [[0.90617729 0.56778177]
+[-0.0709 -0.6047]
+[[0.90617729 0.56778177]
  [0.56778177 4.20071481]]
+```
 
-mu23:  [-0.6047 -0.911 ]
-Sigma23:
- [[4.20071481 0.7337023 ]
+```python
+cov.fit(w1[:, 1:])
+print(cov.location_)
+print(cov.covariance_)
+```
+
+```sh
+[-0.6047 -0.911 ]
+[[4.20071481 0.7337023 ]
  [0.7337023  4.541949  ]]
+```
 
-mu13:  [-0.0709 -0.911 ]
-Sigma13:
- [[0.90617729 0.3940801 ]
+```python
+cov.fit(w1[:, [0,-1]])
+print(cov.location_)
+print(cov.covariance_)
+```
+
+```sh
+[-0.0709 -0.911 ]
+[[0.90617729 0.3940801 ]
  [0.3940801  4.541949  ]]
 ```
 
-Apply to full three-dimensional Gaussian data for $$\omega_1$$:
+* Apply to full three-dimensional Gaussian data for $$\omega_1$$:
 
 ```python
 cov.fit(w1)
-print("mu1: ", cov.location_)
-print("Sigma1:\n", cov.covariance_)
+print(cov.location_)
 ```
 
 ```sh
-mu1:  [-0.0709 -0.6047 -0.911 ]
-Sigma1:
- [[0.90617729 0.56778177 0.3940801 ]
+[-0.0709 -0.6047 -0.911 ]
+```
+
+```python
+print(cov.covariance_)
+```
+
+```sh
+[[0.90617729 0.56778177 0.3940801 ]
  [0.56778177 4.20071481 0.7337023 ]
  [0.3940801  0.7337023  4.541949  ]]
 ```
 
-Assume the three-dimensional model is separable, so that $$\Sigma = \text{diag}(\sigma_1^2, \sigma_2^2, \sigma_3^2)$$. Estimate the mean and the diagonal components of $$\Sigma$$ in data $$\omega_2$$:
+* Assume the three-dimensional model is separable, so that $$\Sigma = \text{diag}(\sigma_1^2, \sigma_2^2, \sigma_3^2)$$. Estimate the mean and the diagonal components of $$\Sigma$$ in data $$\omega_2$$:
 
 ```python
-print("mu2: ", w2.mean(0))
-print("Sigma2:\n", np.diag(w2.var(0)))
+print(w2.mean(0))
 ```
 
 ```sh
-mu2:  [-0.1126   0.4299   0.00372]
-Sigma2:
- [[0.05392584 0.         0.        ]
+[-0.1126   0.4299   0.00372]
+```
+
+```python
+print(np.diag(w2.var(0)))
+```
+
+```sh
+[[0.05392584 0.         0.        ]
  [0.         0.04597009 0.        ]
  [0.         0.         0.00726551]]
 ```
 
-Compare results for the mean $$\mu_i$$ and the variance $$\sigma_i$$ of each feature:
-
-```python
-print('mu1:', w1.mean(0))
-print('mu2:', w2.mean(0))
-print('mu3:', w3.mean(0))
-print('var1: ', w1.var(0))
-print('var2: ', w2.var(0))
-print('var3: ', w3.var(0))
-```
-
-```sh
-mu1: [-0.0709 -0.6047 -0.911 ]
-mu2: [-0.1126   0.4299   0.00372]
-mu3: [0.2747 0.3001 0.6786]
-var1:  [0.90617729 4.20071481 4.541949  ]
-var2:  [0.05392584 0.04597009 0.00726551]
-var3:  [0.30186081 0.64496409 1.26214164]
-```
-
 ## EM algorithm
-Use same data points above, suppose that ten data points in category $$\omega_1$$ come from a three-dimensional Gaussian. However, there is no access to the $$x_3$$ components for the even-numbered data points. Use EM algorithm to estimate the mean and covariance of the distribution. Start estimate with $$\mu_0=0$$ and $$\Sigma=I$$, the three-dimensional identity matrix:
+Use same data points above, suppose that ten data points in category $$\omega_1$$ come from a three-dimensional Gaussian. However, there is no access to the $$x_3$$ components for the even-numbered data points.
 
 ```python
+import numpy as np
+
 w1m = np.array([[0.42, -0.087, 0.58],
       [-0.2, -3.3, np.nan],
       [1.3, -0.32, 1.7],
@@ -242,24 +250,91 @@ w1m = np.array([[0.42, -0.087, 0.58],
       [0.27, -0.3, np.nan],
       [-1.9, 0.76, -2.1],
       [0.87, -1.0, np.nan]])
+```
 
-w1m[np.isnan(w1m)] = np.nanmean(w1m[:,-1])
+* Use EM algorithm to estimate the mean and covariance of the distribution. Start estimation with $$\mu_0=0$$ and $$\Sigma=I$$, the three-dimensional identity matrix (for the missing $$x_3$$, simply attribute the value $$\frac{x_1+x_2}{2}$$):
+
+```python
+w1m[np.isnan(w1m)] = w1m[:,:2].mean(1)[np.isnan(w1m[:,-1])]
 
 from sklearn.mixture import GaussianMixture
 
-mix = GaussianMixture(means_init=np.zeros((1, 3)), precisions_init=[np.eye(3)])
+gmm = GaussianMixture(means_init=[np.zeros(w1m.shape[1])], precisions_init=[np.identity(w1m.shape[1])])
 
-mix.fit(w1m)
-print(mix.means_)
-print(mix.covariances_)
+gmm.fit(w1m)
+print(gmm.means_)
 ```
 
 ```sh
 [[-0.0709 -0.6047  0.446 ]]
+```
+
+```python
+print(gmm.covariances_)
+```
+
+```sh
 [[[0.90617829 0.56778177 0.707406  ]
   [0.56778177 4.20071581 0.4143502 ]
   [0.707406   0.4143502  1.150433  ]]]
 ```
+
+* Display the obtained result in form of clusters:
+
+```python
+import matplotlib.pyplot as plt
+import matplotlib.cm as cmx
+
+def visualize_3d_gmm(points, w, mu, stdev):
+
+    n_gaussians = mu.shape[1]
+    N = int(np.round(points.shape[0] / n_gaussians))
+
+    fig = plt.figure(figsize=(8, 8))
+    axes = fig.add_subplot(111, projection='3d')
+    plt.set_cmap('Set1')
+    colors = cmx.Set1(np.linspace(0, 1, n_gaussians))
+    for i in range(n_gaussians):
+        idx = range(i * N, (i + 1) * N)
+        axes.scatter(points[idx, 0], points[idx, 1], points[idx, 2], alpha=0.3, c=[colors[i]])
+        plot_sphere(w=w[i], c=mu[:, i], r=stdev[:, i], ax=axes)
+
+    plt.title('3D GMM')
+    axes.set_xlabel('X')
+    axes.set_ylabel('Y')
+    axes.set_zlabel('Z')
+    axes.view_init(35.246, 45)
+
+    plt.show()
+
+def plot_sphere(w=0, c=[0,0,0], r=[1, 1, 1], subdev=10, ax=None, sigma_multiplier=3):
+
+    if ax is None:
+        fig = plt.figure()
+        ax = fig.add_subplot(111, projection='3d')
+    pi = np.pi
+    cos = np.cos
+    sin = np.sin
+    phi, theta = np.mgrid[0.0:pi:complex(0,subdev), 0.0:2.0 * pi:complex(0,subdev)]
+    x = sigma_multiplier*r[0] * sin(phi) * cos(theta) + c[0]
+    y = sigma_multiplier*r[1] * sin(phi) * sin(theta) + c[1]
+    z = sigma_multiplier*r[2] * cos(phi) + c[2]
+    cmap = cmx.ScalarMappable()
+    cmap.set_cmap('jet')
+    c = cmap.to_rgba(w)
+
+    ax.plot_surface(x, y, z, color=c, alpha=0.2, linewidth=1)
+
+    return ax
+```
+
+```python
+visualize_3d_gmm(w1m, gmm.weights_, gmm.means_.T, np.sqrt(gmm.covariances_).T)
+```
+
+![](https://zyz9066.github.io/images/509/gmm1.png)
+![](https://zyz9066.github.io/images/509/gmm2.png)
+![](https://zyz9066.github.io/images/509/gmm3.png)
 
 Compare final estimate with the case when there is no missing data:
 
