@@ -336,17 +336,38 @@ visualize_3d_gmm(w1m, gmm.weights_, gmm.means_.T, np.sqrt(gmm.covariances_).T)
 ![](https://zyz9066.github.io/images/509/gmm2.png)
 ![](https://zyz9066.github.io/images/509/gmm3.png)
 
-Compare final estimate with the case when there is no missing data:
+* Compare final estimate with the case when there is no missing data:
 
 ```python
-mix.fit(w1)
-print(mix.means_)
-print(mix.covariances_)
+w1 = np.array([(0.42, -0.087, 0.58),
+      (-0.2, -3.3, -3.4),
+      (1.3, -0.32, 1.7),
+      (0.39, 0.71, 0.23),
+      (-1.6, -5.3, -0.15),
+      (-0.029, 0.89, -4.7),
+      (-0.23, 1.9, 2.2),
+      (0.27, -0.3, -0.87),
+      (-1.9, 0.76, -2.1),
+      (0.87, -1.0, -2.6)])
+
+gmm.fit(w1)
+print(gmm.means_)
 ```
 
 ```sh
 [[-0.0709 -0.6047 -0.911 ]]
+```
+
+```python
+print(gmm.covariances_)
+```
+
+```sh
 [[[0.90617829 0.56778177 0.3940801 ]
   [0.56778177 4.20071581 0.7337023 ]
   [0.3940801  0.7337023  4.54195   ]]]
+```
+
+```python
+visualize_3d_gmm(w1m, gmm.weights_, gmm.means_.T, np.sqrt(gmm.covariances_).T)
 ```
