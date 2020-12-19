@@ -333,8 +333,6 @@ visualize_3d_gmm(w1m, gmm.weights_, gmm.means_.T, np.sqrt(gmm.covariances_).T)
 ```
 
 ![](https://zyz9066.github.io/images/509/gmm1.png)
-![](https://zyz9066.github.io/images/509/gmm2.png)
-![](https://zyz9066.github.io/images/509/gmm3.png)
 
 * Compare final estimate with the case when there is no missing data:
 
@@ -368,6 +366,37 @@ print(gmm.covariances_)
   [0.3940801  0.7337023  4.54195   ]]]
 ```
 
+* Display the obtained result in form of clusters:
+
 ```python
-visualize_3d_gmm(w1m, gmm.weights_, gmm.means_.T, np.sqrt(gmm.covariances_).T)
+visualize_3d_gmm(w1, gmm.weights_, gmm.means_.T, np.sqrt(gmm.covariances_).T)
 ```
+
+![](https://zyz9066.github.io/images/509/gmm2.png)
+
+* Compare final estimate with that for the case when there is no missing data in the case of diagonal covariance:
+
+```python
+gmm = GaussianMixture(covariance_type='diag', means_init=[np.zeros(w1.shape[1])], precisions_init=[np.ones(w1.shape[1])])
+gmm.fit(w1)
+```
+
+```sh
+[[-0.0709 -0.6047 -0.911 ]]
+```
+
+```python
+print(gmm.covariances_)
+```
+
+```sh
+[[0.90617829, 4.20071581, 4.54195   ]]
+```
+
+* Display the obtained result in form of clusters:
+
+```python
+visualize_3d_gmm(w1, gmm.weights_, gmm.means_.T, np.sqrt(gmm.covariances_).T)
+```
+
+![](https://zyz9066.github.io/images/509/gmm3.png)
