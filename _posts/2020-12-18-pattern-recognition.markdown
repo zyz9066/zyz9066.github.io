@@ -538,6 +538,7 @@ axes[2].set_xticklabels([])
 plt.tight_layout()
 plt.show()
 ```
+
 ![](https://zyz9066.github.io/images/509/dr2d.png)
 
 ```Python
@@ -568,4 +569,5 @@ ax.set_xticklabels([])
 plt.tight_layout()
 plt.show()
 ```
+
 ![](https://zyz9066.github.io/images/509/dr3d.png)
