@@ -400,3 +400,59 @@ visualize_3d_gmm(w1, gmm.weights_, gmm.means_.T, np.sqrt(gmm.covariances_).T)
 ```
 
 ![](https://zyz9066.github.io/images/509/gmm3.png)
+
+* Draw the Akaike information criterion (AIC) and Bayesian information criterion (BIC) curves for this dataset:
+
+```python
+def testGMMsklearnBICAIC(data, n_gaussian):
+    n_components = np.arange(1, n_gaussian+1)
+    clfs = [GaussianMixture(n).fit(data) for n in n_components]
+    bics = [clf.bic(data) for clf in clfs]
+    aics = [clf.aic(data) for clf in clfs]
+
+    plt.plot(n_components, bics, label = 'BIC')
+    plt.plot(n_components, aics, label = 'AIC')
+    plt.xlabel('n_components')
+    plt.legend()
+    plt.show()
+
+testGMMsklearnBICAIC(w1, 10)
+```
+
+![](https://zyz9066.github.io/images/509/aicbic.png)
+
+## Non-Parametric Methods
+Given a dataset $$D=\{0,1,1,1,2,2,2,2,3,4,4,4,5\}$$. Use techniques from parametric and non-parametric density estimation.
+
+```Python
+import numpy as np
+
+D = np.array([0,1,1,1,2,2,2,2,3,4,4,4,5])
+```
+
+* Draw histogram of $$D$$ with bin width of 1 and bins centered at $$\{0,1,2,3,4,5\}$$:
+
+```Python
+import matplotlib.pyplot as plt
+
+plt.hist(D, bins=np.arange(D.max()-D.min()+2)-0.5, density=True)
+plt.show()
+```
+
+![](https://zyz9066.github.io/images/509/kde1.png)
+
+* Select a triangle kernel as window function -- $$K(u)=(1-|u|)\delta(|u|\leq1)$$, where $$u$$ is a function of the distance of sample $$x_i$$ to the value in $$x$$ divided by the bandwidth -- $$u=\frac{x-x_i}{h}$$. Compute the kernel density estimates for the following values of $$x={0,1,2,3,4,5}$$ with bandwidth of 2:
+
+```Python
+def p(x, X=D, h=2):
+    K = lambda t: 1/h**X.ndim * (1-np.abs((x-t)/2)) * (np.abs((x-t)/2) <= 1)
+    return np.vectorize(K)(X).sum() / X.size
+
+x = np.arange(D.max()+1)
+p = np.vectorize(p)(x)
+print(p)
+```
+
+```sh
+[0.09615385 0.21153846 0.23076923 0.17307692 0.15384615 0.09615385]
+```
