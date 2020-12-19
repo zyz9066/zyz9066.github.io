@@ -479,6 +479,8 @@ print(D.var())
 * Compare the histogram, the triangle-kernel density estimate, and the maximum-likelihood estimated Gaussian:
 
 ```python
+from scipy.stats import norm
+
 plt.hist(D, bins=np.arange(D.max()-D.min()+2)-0.5, density=True, label='histogram')
 plt.plot(p, label='KDE')
 x_axis = np.arange(D.min()-1, D.max()+1, 0.001)
@@ -488,3 +490,82 @@ plt.show()
 ```
 
 ![](https://zyz9066.github.io/images/509/kde2.png)
+
+## Dimensionality Reduction
+Test three dimensionality reduction methods by using a real dataset. Iris dataset also known as Fisher's Iris is a multivariate dataset presented in 1936 by Ronald Fisher in his paper entitled by “The  use  of  multiple measurements in taxonomic problems as an application example of linear discriminant analysis”. The dataset includes 50 samples from each of the three iris species (Iris setosa, Iris virginica and Iris versicolor). Four features were measured from each sample: the length and width of the sepals and petals, in centimeters. Illustrate in 2D and in 3D the features' reduction of Iris dataset with the following three dimensionality reduction methods:
+1. Principal Component Analysis;
+2. Isometric Mapping;
+3. Locally linear embedding.
+
+```Python
+from sklearn import datasets
+
+iris = datasets.load_iris()
+X = iris.data
+y = iris.target
+
+from sklearn.decomposition import PCA
+from sklearn.manifold import Isomap
+from sklearn.manifold import LocallyLinearEmbedding
+
+def PCAProjection(myArray, dim):
+    return PCA(n_components=dim).fit_transform(myArray)
+
+def ISOMAPProjection(myArray, dim):
+    return Isomap(n_components=dim).fit_transform(myArray)
+
+def LLEProjection(myArray, dim):
+    return LocallyLinearEmbedding(n_components=dim).fit_transform(myArray)
+```
+
+```python
+fig, axes = plt.subplots(1, 3, figsize=(15, 5))
+X_reduced = PCAProjection(X, 2)
+axes[0].scatter(X_reduced[:, 0], X_reduced[:, 1], c=y, cmap=plt.cm.Set1, edgecolor='k')
+axes[0].set_title('PCA')
+axes[0].set_yticklabels([])
+axes[0].set_xticklabels([])
+X_reduced = ISOMAPProjection(X, 2)
+axes[1].scatter(X_reduced[:, 0], X_reduced[:, 1], c=y, cmap=plt.cm.Set1, edgecolor='k')
+axes[1].set_title('IsoMap')
+axes[1].set_yticklabels([])
+axes[1].set_xticklabels([])
+X_reduced = LLEProjection(X, 2)
+axes[2].scatter(X_reduced[:, 0], X_reduced[:, 1], c=y, cmap=plt.cm.Set1, edgecolor='k')
+axes[2].set_title('LLE')
+axes[2].set_yticklabels([])
+axes[2].set_xticklabels([])
+plt.tight_layout()
+plt.show()
+```
+![](https://zyz9066.github.io/images/509/dr2d.png)
+
+```Python
+from mpl_toolkits import mplot3d
+
+fig = plt.figure(figsize=(20, 6))
+ax = fig.add_subplot(1, 3, 1, projection='3d')
+X_reduced = PCAProjection(X, 3)
+ax.scatter(X_reduced[:, 0], X_reduced[:, 1], X_reduced[:, 2], c=y, cmap=plt.cm.Set1, edgecolor='k')
+ax.set_title('PCA')
+ax.set_zticklabels([])
+ax.set_yticklabels([])
+ax.set_xticklabels([])
+ax = fig.add_subplot(1, 3, 2, projection='3d')
+X_reduced = ISOMAPProjection(X, 3)
+ax.scatter(X_reduced[:, 0], X_reduced[:, 1], X_reduced[:, 2], c=y, cmap=plt.cm.Set1, edgecolor='k')
+ax.set_title('IsoMap')
+ax.set_zticklabels([])
+ax.set_yticklabels([])
+ax.set_xticklabels([])
+ax = fig.add_subplot(1, 3, 3, projection='3d')
+X_reduced = LLEProjection(X, 3)
+ax.scatter(X_reduced[:, 0], X_reduced[:, 1], X_reduced[:, 2], c=y, cmap=plt.cm.Set1, edgecolor='k')
+ax.set_title('LLE')
+ax.set_zticklabels([])
+ax.set_yticklabels([])
+ax.set_xticklabels([])
+plt.tight_layout()
+plt.show()
+```
+![](https://zyz9066.github.io/images/509/dr3d.png)
