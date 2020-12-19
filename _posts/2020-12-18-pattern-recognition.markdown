@@ -441,7 +441,7 @@ plt.show()
 
 ![](https://zyz9066.github.io/images/509/kde1.png)
 
-* Select a triangle kernel as window function -- $$K(u)=(1-|u|)\delta(|u|\leq1)$$, where $$u$$ is a function of the distance of sample $$x_i$$ to the value in $$x$$ divided by the bandwidth -- $$u=\frac{x-x_i}{h}$$. Compute the kernel density estimates for the following values of $$x={0,1,2,3,4,5}$$ with bandwidth of 2:
+* Select a triangle kernel as window function --- $$K(u)=(1-\mathopen\mid u\mathclose\mid)\delta(\mathopen\mid u\mathclose\mid\leq1)$$, where $$u$$ is a function of the distance of sample $$x_i$$ to the value in $$x$$ divided by the bandwidth --- $$u=\frac{x-x_i}{h}$$. Compute the kernel density estimates for the following values of $$x=\{0,1,2,3,4,5\}$$ with bandwidth of 2:
 
 ```Python
 def p(x, X=D, h=2):
@@ -456,3 +456,35 @@ print(p)
 ```sh
 [0.09615385 0.21153846 0.23076923 0.17307692 0.15384615 0.09615385]
 ```
+
+* Assume the density is a parametric desity --- Gaussian. Compute the maximum likelihood estimate of the Gaussian's parameters:
+
+```Python
+mu = D.mean()
+print(mu)
+```
+
+```sh
+2.3846153846153846
+```
+
+```Python
+print(D.var())
+```
+
+```sh
+2.082840236686391
+```
+
+* Compare the histogram, the triangle-kernel density estimate, and the maximum-likelihood estimated Gaussian:
+
+```python
+plt.hist(D, bins=np.arange(D.max()-D.min()+2)-0.5, density=True, label='histogram')
+plt.plot(p, label='KDE')
+x_axis = np.arange(D.min()-1, D.max()+1, 0.001)
+plt.plot(x_axis, norm.pdf(x_axis,mu,D.std()), label='gaussian')
+plt.legend()
+plt.show()
+```
+
+![](https://zyz9066.github.io/images/509/kde2.png)
