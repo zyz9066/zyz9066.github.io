@@ -21,8 +21,7 @@
 title: Tianye's Blog
 email: zyz9066@yahoo.com
 description: >- # this means to ignore newlines until "baseurl:"
-  This site is designed to present data science knowledge to learners in a clear,
-  concise way, and provide a resource and reference for those that are new to data science.
+  Previous works.
 baseurl: "" # the subpath of your site, e.g. /blog
 url: "" # the base hostname & protocol for your site, e.g. http://example.com
 twitter_username:
