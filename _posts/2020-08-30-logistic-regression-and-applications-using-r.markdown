@@ -19,6 +19,18 @@ $$\begin{equation}
 \log{\frac{p(y)}{1 - p(y)}} = \beta_0 + \beta_1 x_1 + \cdots + \beta_k x_k.
 \end{equation}$$
 
+Define $$S(w)$$ as the **logistic sigmoid function** give by
+
+$$\begin{equation}
+S(w) = \frac{1}{1+e^{-w}}
+\end{equation}$$
+
+* Display a graph of $$S(w)$$ for $$-\infty < w < \infty$$
+
+![](https://zyz9066.github.io/images/590/rplots.png)
+
+it shows no matter what values $$\beta_0, \beta_1, \cdots, \beta_k$$ or $$x_1, \cdots, x_k$$ take, $$p(y)$$ will always have values between 0 and 1.
+
 To summarize, the logistic regression starts with the idea of linear regression and transforms its output using the sigmoid function to return a probability value.
 
 ### Maximum Likelihood Estimation (MLE) of the Model
