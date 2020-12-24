@@ -27,7 +27,7 @@ S(w) = \frac{1}{1+e^{-w}}
 
 * Display a graph of $$S(w)$$ for $$-\infty < w < \infty$$
 
-![](https://zyz9066.github.io/images/590/rplots.png)
+![](https://zyz9066.github.io/images/590/rplots.pdf)
 
 it shows no matter what values $$\beta_0, \beta_1, \cdots, \beta_k$$ or $$x_1, \cdots, x_k$$ take, $$p(y)$$ will always have values between 0 and 1.
 
