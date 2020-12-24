@@ -171,6 +171,8 @@ N=6 CNBclf accuracy: 0.86 (+/- 0.12)
 N=6 BNBclf accuracy: 0.57 (+/- 0.09)
 ```
 
+![](https://zyz9066.github.io/images/590/nb.png)
+
 #### Decision Tree
 
 ```python
@@ -235,6 +237,8 @@ Best Params: {'class_weight': None, 'max_depth': 30}
 0.76 (+/-0.34) for {'class_weight': None, 'max_depth': 90}
 0.77 (+/-0.26) for {'class_weight': None, 'max_depth': None}
 ```
+
+![](https://zyz9066.github.io/images/590/dt.png)
 
 #### K-NN
  For K-NN, test accuracy with $$K = 2, 3, 4$$.
@@ -346,6 +350,8 @@ Best Params: {'n_neighbors': 4, 'weights': 'uniform'}
 0.95 (+/-0.1) for {'n_neighbors': 4, 'weights': 'distance'}
 ```
 
+![](https://zyz9066.github.io/images/590/knn.png)
+
 #### Neural Network
 
 ```python
@@ -394,6 +400,8 @@ Best Params: {'activation': 'logistic', 'hidden_layer_sizes': (200,)}
 0.88 (+/-0.07) for {'activation': 'relu', 'hidden_layer_sizes': (200,)}
 0.89 (+/-0.09) for {'activation': 'relu', 'hidden_layer_sizes': (400,)}
 ```
+
+![](https://zyz9066.github.io/images/590/nn.png)
 
 #### Random Forest
 
@@ -444,6 +452,8 @@ Best Params: {'class_weight': 'balanced', 'max_depth': 90, 'n_estimators': 150}
 0.95 (+/-0.15) for {'class_weight': 'balanced', 'max_depth': None, 'n_estimators': 150}
 0.96 (+/-0.1) for {'class_weight': 'balanced', 'max_depth': None, 'n_estimators': 300}
 ```
+
+![](https://zyz9066.github.io/images/590/rf.png)
 
 Use the gene names from best train gene set and extract the data corresponding to these genes from the test set. Convert test set to "gene-in-columns" format to prepare it for classification.
 
