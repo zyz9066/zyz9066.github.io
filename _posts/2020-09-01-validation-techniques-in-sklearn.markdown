@@ -1,6 +1,6 @@
 ---
 layout: post
-title:  "Validation Techniques in Scikit-learn"
+title:  "Validation Techniques in scikit-learn"
 date:   2020-09-01 18:11:03 -0400
 categories: data mining
 ---
@@ -38,7 +38,7 @@ knn = KNeighborsClassifier(3, n_jobs=-1) # instance based
 mlp = MLPClassifier() # neural network
 ```
 
-Train and run each classifier on each classification dataset separately, resulting in a 4x4 matrix (dataset rows, classifier columns) showing the accuracy of 4 classifiers above on each classification dataset (here use entire dataset, no test/train split). Classification datasets are iris, digits, wine, breast cancer:
+Train and run each classifier on each classification dataset separately, resulting in a 4x4 matrix (dataset rows, classifier columns) showing the accuracy of 4 classifiers above on each classification dataset (here use entire dataset, no test/train split). Classification datasets are iris, digits, wine, breast cancer. Display this matrix using `imshow` from `matplotlib`. Using the 4x4 matrix, we can get classifier which has highest mean accuracy across all datasets and dataset which has the highest mean accuracy across all classifiers:
 
 ```python
 clfs = [gnb, tree, knn, mlp]
@@ -49,29 +49,23 @@ for i in range(len(clf_data)):
     for j in range(len(clfs)):
         clf_mat[i,j] = clfs[j].fit(clf_data[i].data, clf_data[i].target).score(clf_data[i].data, clf_data[i].target)
 
-print(clf_mat)
-```
-
-```sh
-[[0.96       1.         0.96       0.97333333]
- [0.85809683 1.         0.9933222  1.        ]
- [0.98876404 1.         0.87078652 0.92696629]
- [0.94200351 1.         0.95606327 0.92091388]]
-```
-
-Using the 4x4 matrix above, we can get classifier which has highest mean accuracy across all datasets and dataset which has the highest mean accuracy across all classifiers:
-
-```python
 datasets = ['iris', 'digits', 'wine', 'cancer']
 classifiers = ['GaussianNB', 'DecisionTree', 'KNN', 'MLP']
-print('Classifier with highest mean accuracy:', classifiers[np.argmax(np.mean(clf_mat, axis=0))])
-print('Dataset with highest mean accuracy:', datasets[np.argmax(np.mean(clf_mat, axis=1))])
+
+max_clf = classifiers[np.argmax(np.mean(clf_mat, axis=0))]
+max_clf_dataset = datasets[np.argmax(np.mean(clf_mat, axis=1))]
+
+plt.imshow(clf_mat, cmap='viridis')
+plt.yticks(range(4), datasets)
+plt.xticks(range(4), classifiers)
+plt.xlim([-0.5, 3.5])
+plt.colorbar()
+plt.title('top classifier='+max_clf +', top dataset='+ max_clf_dataset)
+plt.show()
 ```
 
-```sh
-Classifier with highest mean accuracy: DecisionTree
-Dataset with highest mean accuracy: iris
-```
+![](https://zyz9066.github.io/images/505/a3q1a.png)
+
 ### Regressors
 Import and initialize the following regression algorithms from *sklearn*:
 
@@ -83,7 +77,7 @@ reg = linear_model.LinearRegression(n_jobs=-1) # linear regression
 svr = svm.SVR(gamma='scale') # support vector regression
 ```
 
-Create a 3x2 matrix (dataset rows, classifier columns) showing accuracy of 2 regression techniques above on the three regression datasets:
+Create a 3x2 matrix (dataset rows, classifier columns) showing accuracy of 2 regression techniques above on the three regression datasets (for *linnerud*, use only chinups). Get regression technique which has lower mean-squared error (across datasets) and dataset which has lowest mean squared-error (across regression methods):
 
 ```python
 # can't use loop because of irregular formats (linnerud)
@@ -116,28 +110,23 @@ regmat[2,0] = mean_squared_error(reg.predict(regsets[2].target),regsets[2].data[
 reg = regs[1].fit(regsets[2].target,regsets[2].data[:,0])
 regmat[2,1] = mean_squared_error(reg.predict(regsets[2].target),regsets[2].data[:,0])
 
-print('Score matrix:\n', regmat)
-```
-
-```sh
-Score matrix:
- [[  21.89483118   66.81823779]
- [2859.69039877 4701.3346054 ]
- [  17.53272477   27.93451036]]
-```
-Get regression technique which has lower mean-squared error (across datasets) and dataset which has lowest mean squared-error (across regression methods):
-
-```python
 datasets = ['boston', 'diabetes', 'linnerud']
-regs = ['LinearRegression', 'SupportVectorRegression']
-print('Technique with lower MSE:', regs[np.argmin(np.mean(regmat, axis=0))])
-print('Dataset with lowest MSE:', datasets[np.argmin(np.mean(regmat, axis=1))])
+regs = ['LinearRegression', 'SVR']
+
+max_reg = regs[np.argmin(np.mean(regmat, axis=0))]
+max_reg_dataset = datasets[np.argmin(np.mean(regmat, axis=1))]
+
+plt.imshow(regmat, cmap='viridis')
+plt.yticks(range(3), datasets)
+plt.xticks(range(2), regs)
+plt.xlim([-0.5, 1.5])
+plt.colorbar()
+plt.title('top classifier='+max_reg +', top dataset='+ max_reg_dataset)
+
+plt.show()
 ```
 
-```sh
-Technique with lower MSE: LinearRegression
-Dataset with lowest MSE: linnerud
-```
+![](https://zyz9066.github.io/images/505/a3q1b.png)
 
 ## California housing predictions and validation
 Fetch California housing dataset:

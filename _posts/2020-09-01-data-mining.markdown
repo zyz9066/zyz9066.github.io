@@ -38,7 +38,7 @@ for idx, col in enumerate(num_cols):
 plt.show()
 ```
 
-![](https://zyz9066.github.io/images/505/2/q1.png)
+![](https://zyz9066.github.io/images/505/a2q1.png)
 
 The histogram is shaped like a gaussian.
 ## Objective 2
@@ -121,8 +121,10 @@ axs[2, 2].set(xlabel='heartrate', ylabel='jumps')
 plt.show()
 ```
 
+![](https://zyz9066.github.io/images/505/a2q2.png)
+
 ## Objective 3
-To understand the basic machine learning algorithms, here I implement the following two algorithms, from scratch, in *Python* (using only *Numpy* import). And test these algorithms on the [*Linnerrud*](https://scikit-learn.org/stable/datasets/index.html#linnerrud-dataset "Linnerrud dataset") dataset (import using: `from sklearn.datasets import load_linnerud`) using all 3 attributes, and only the chinups outcome. Define new vector assigning binary classes to the outcome of chinups as follows:
+To understand the basic machine learning algorithms, here I implement the following two algorithms, from scratch, in *python* (using only *numpy* import). And test these algorithms on the [*Linnerrud*](https://scikit-learn.org/stable/datasets/index.html#linnerrud-dataset "Linnerrud dataset") dataset (import using: `from sklearn.datasets import load_linnerud`) using all 3 attributes, and only the chinups outcome. Define new vector assigning binary classes to the outcome of chinups as follows:
 
 `if (chinups > median(chinups)) then chinups = 0 else chinups = 1`
 
@@ -139,12 +141,12 @@ chinups = np.where(chinups > median, 1, 0)
 
 then use these classes to build the probability table and train the perceptron.
 
-## Gaussian Naive Bayes
+### Gaussian Naive Bayes
 Gaussian Naive Bayes is a probabilistic modeling algorithm.
 
 
 
-# A) Gaussian Naive Bayes (probabilistic modeling)
+* Gaussian Naive Bayes (probabilistic modeling)
 
 ```python
 class GNB():
@@ -197,7 +199,7 @@ print(((outputs > 0.5) == chinups).sum() / len(chinups))
 0.7
 ```
 
-## Perceptron
+### Perceptron
 Perceptron learning rule is linear modeling algorithm.
 
 ```python
