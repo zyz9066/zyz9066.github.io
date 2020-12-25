@@ -1,10 +1,46 @@
 ---
 layout: post
-title:  "Gaussian Naive Bayes and Perceptron"
+title:  "Data Mining"
 date:   2020-09-01 11:11:03 -0400
 categories: data mining
 ---
-## Objective
+## Objective 1
+Familiarize with vector operations for manipulating multi-dimensional arrays in *numpy*.
+1. Using *numpy*, initialize two arrays (1000 rows, 50 and 10 columns) of random numbers each number ranging between 0 and 1;
+2. Create the correlation matrix (shape=[1000, 1000]) of pearson correlations between all pairs of rows from above;
+3. Using *matplotlib*, plot a 100-bin histogram, using values from lower triangle of $$1000\times1000$$ correlation coefficient (r-values) matrix obtained from above (omit the diagonal and all cells above the diagonal);
+4. Using the histogram, estimate the probability of obtaining an r-value > 0.75 or < -0.75 from correlating two random vectors of size 50 and 10.
+
+```python
+import numpy as np
+import matplotlib.pyplot as plt
+
+num_row = 1000
+num_cols = [50, 10]
+num_bins= 100
+idx_low = np.tril_indices(num_row, -1)
+fig, axs = plt.subplots(2, constrained_layout=True)
+for idx, col in enumerate(num_cols):
+    arr = np.random.rand(num_row, col)
+
+    corr_mat = np.corrcoef(arr)
+
+    low_tri_arr = corr_mat[idx_low]
+    hist, bin_edges = np.histogram(low_tri_arr, bins=num_bins, density=True)
+    indices = np.logical_or(bin_edges[:-1]<-0.75, bin_edges[:-1]>0.75)
+
+    est = np.sum(hist[indices] * np.diff(bin_edges)[indices])
+
+    axs[idx].hist(low_tri_arr, bins=num_bins, density=True)
+    axs[idx].set_title('Probability of r-value > 0.75 or <-0.75 is {:.2f}% (size {})'.format(est*100, col))
+    axs[idx].set(xlabel='r-value', ylabel='probabilty')
+
+plt.show()
+```
+
+![](https://zyz9066.github.io/images/505/2/q1.png)
+
+## Objective 3
 To understand the basic machine learning algorithms, here I implement the following two algorithms, from scratch, in *Python* (using only *Numpy* import). And test these algorithms on the [*Linnerrud*](https://scikit-learn.org/stable/datasets/index.html#linnerrud-dataset "Linnerrud dataset") dataset (import using: `from sklearn.datasets import load_linnerud`) using all 3 attributes, and only the chinups outcome. Define new vector assigning binary classes to the outcome of chinups as follows:
 
 `if (chinups > median(chinups)) then chinups = 0 else chinups = 1`

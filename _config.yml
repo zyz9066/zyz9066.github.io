@@ -21,7 +21,7 @@
 title: Tianye's Blog
 email: zyz9066@yahoo.com
 description: >- # this means to ignore newlines until "baseurl:"
-  Previous works.
+  Machine Learning & Image Analysis
 baseurl: "" # the subpath of your site, e.g. /blog
 url: "" # the base hostname & protocol for your site, e.g. http://example.com
 twitter_username:
