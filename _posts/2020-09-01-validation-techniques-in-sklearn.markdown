@@ -13,6 +13,8 @@ Import and load the toy datasets from *sklearn*:
 
 ```python
 import numpy as np
+import matplotlib.pyplot as plt
+
 from sklearn.datasets import load_boston, load_iris, load_diabetes, load_digits, load_linnerud, load_wine, load_breast_cancer
 
 boston = load_boston()              # regression
@@ -136,21 +138,16 @@ from sklearn.datasets import fetch_california_housing
 cali = fetch_california_housing()
 ```
 
-Using Gaussian Naive Bayes, for each instance output a probability that the house is worth over $$\$300$$k (target variable is in units of $$\$100,000$$'s):
+* Using Gaussian Naive Bayes, for each instance output a probability that the house is worth over $$\$300$$k (target variable is in units of $$\$100,000$$'s):
 
 ```python
 from sklearn.naive_bayes import GaussianNB
 gnb = GaussianNB()
 gnb.fit(cali.data, cali.target>3)
 probs = gnb.predict_proba(cali.data)[:,1]
-print('Probabilities:', probs)
 ```
 
-```sh
-Probabilities: [0.99466801 0.9864607  0.97258702 ... 0.02976907 0.02970739 0.02622946]
-```
-
-Perform k-fold (k=10) cross-validation (CV) and find the average error across all folds on the test set (using GNB) and the resubstitution error (error on training data):
+* Perform k-fold (k=10) cross-validation (CV) and find the average error across all folds on the test set (using GNB) and the resubstitution error (error on training data):
 
 ```python
 from sklearn.model_selection import cross_val_score
@@ -164,7 +161,7 @@ Average error: 0.16167635658914725
 Resubstitution error: 0.13187984496124028
 ```
 
-Calculate the ROC area using the training data above, this is also known as the 'resubstitution ROC area' (ROC from training data), i.e., train GNB on all the instances, then calculate ROC area using probabilities from predictions on instances that GNB was trained on. Also try to increase the area under ROC by denoising or removing attributes, of performing some other type of transformation (PCA, PLS, etc.):
+* Plot the ROC curve using the training data above, this is also known as the 'resubstitution ROC area' (ROC from training data), i.e., train GNB on all the instances, then calculate ROC area using probabilities from predictions on instances that GNB was trained on. Also try to increase the area under ROC by denoising or removing attributes, of performing some other type of transformation (PCA, PLS, etc.):
 
 ```python
 from sklearn import metrics
@@ -208,12 +205,11 @@ aucs.append(roc_auc(clf,plsr_data,cali.target>3))
 plssvd_data = PLSSVD(n_components=n_comps).fit_transform(cali.data,cali.target)[0]
 aucs.append(roc_auc(clf,plssvd_data,cali.target>3))
 
-print([m+': '+str(n) for m,n in zip(denoise_types,aucs)])
+plt.legend([m+': '+str(n) for m,n in zip(denoise_types,aucs)])
 ```
 
-```sh
-['no denoising: 0.8484153867233061', 'dictionary: 0.5750434485532642', 'fastica: 0.876654999405524', 'factor: 0.8468747448035487', 'pca: 0.8798073504148549', 'pls: 0.8477933977311624', 'cca: 0.8958197952520863', 'plsr: 0.8819438023594859', 'plssvd: 0.8477934054878935']
-```
+![](https://zyz9066.github.io/images/505/a3q2.png)
+
 It seems [canonical correlation](https://en.wikipedia.org/wiki/Canonical_correlation) analysis is most useful (on this dataset).
 
 Using the following 3 classifiers:
@@ -230,14 +226,16 @@ kneigh = KNeighborsClassifier(n_neighbors=3, n_jobs=-1)
 gnb = GaussianNB()
 ```
 
-Calculate the average ROC area over 10 tests sets from 10-fold CV, (i.e., calculate one ROC area for each fold's test set predictions, and average them all to create a single ROC area):
+* Plot the average ROC curve with error bars over 10 tests sets from 10-fold CV, (i.e., calculate one ROC area for each fold's test set predictions, and average them all to create a single ROC area):
 
 ```python
 from sklearn.model_selection import StratifiedKFold
 from sklearn.metrics import roc_curve, auc
+
+tprs = np.zeros([3,10,100])
 aucs = np.zeros([3,10])
+mean_fpr = np.linspace(0, 1, 100)
 cv = StratifiedKFold(n_splits=10)
-cali = fetch_california_housing()
 X = cali.data
 y = cali.target > 3
 i = 0
@@ -246,23 +244,27 @@ for clf in [forest,kneigh,gnb]:
     for train, test in cv.split(X, y):
         probas_ = clf.fit(X[train], y[train]).predict_proba(X[test])
         fpr, tpr, thresholds = roc_curve(y[test], probas_[:, 1])
+        tprs[clfcount,i,:] = np.interp(mean_fpr, fpr, tpr)
+
         roc_auc = auc(fpr, tpr)
         aucs[clfcount,i] = roc_auc
         i += 1
     clfcount += 1
     i=0
 
+for i in np.arange(0,3):
+    plt.errorbar(np.arange(0,100),np.mean(tprs[i,:,:],axis=0),\
+                 np.std(tprs[i,:,:],axis=0))
 clf_types = ['forest','kneigh','gnb']
-print([m+':'+str(n) for m,n in zip(clf_types,np.mean(aucs,axis=1))])
+plt.legend([m+': '+str(n) for m,n in zip(clf_types,np.mean(aucs,axis=1))])
+plt.show()
 ```
+
+![](https://zyz9066.github.io/images/505/a3q3.png)
 
 Random Forest algorithm gives the highest area under average ROC curve from results.
 
-```sh
-['forest:0.8841087896768691', 'kneigh:0.6391597057782026', 'gnb:0.8236029346715579']
-```
-
-Using a t-test, compare the algorithm with the highest performance to the other two algorithms, and check if the p-value is significant (p<0.05):
+* Using a t-test, compare the algorithm with the highest performance to the other two algorithms, and check if the p-value is significant (p<0.05):
 
 ```python
 from scipy import stats
