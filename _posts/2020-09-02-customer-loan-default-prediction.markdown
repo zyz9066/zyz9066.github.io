@@ -176,4 +176,13 @@ Validation ROC curve of the model:
 
 ![](https://zyz9066.github.io/images/505/p2.png)
 
+Top 5 most important features:
+
+```Python
+print(clf.feature_importances_.argsort()[-5:][::-1])
+```
+
+```sh
+[480  21  24  27 368]
+```
 Make prediction using `clf.predict_proba(x_test)[:, 1]`.
