@@ -1,6 +1,6 @@
 ---
 layout: post
-title:  "Linear Regression and Classification in Python"
+title:  "Linear Regression and Classification"
 date:   2020-09-03 11:11:03 -0400
 categories: statistical learning
 ---
@@ -41,28 +41,32 @@ lr.fit(xTrain, yTrain)
 train_score=lr.score(xTrain, yTrain)
 test_score=lr.score(xTest, yTest)
 
-print("linear regression train score:", train_score)
-print("linear regression test score:", test_score)
+print("linear regression train_score:", train_score)
+print("linear regression test_score:", test_score)
 ```
 
 ```sh
-linear regression train score: 0.2103670173790424
-linear regression test score: 0.028635201294539673
+linear regression train_score: 0.2103670173790424
+linear regression test_score: 0.028635201294539673
 ```
 
-The vector of $$\boldsymbol{\omega}_o$$ obtained is
+Plot the vector of $$\boldsymbol{\omega}_o$$ obtained:
 
 ```python
-print(lr.coef_[0])
+import matplotlib.pyplot as plt
+%matplotlib inline
+
+plt.plot(np.arange(M),lr.coef_[0],linestyle='none',marker='o',label='$\lambda = 0$')
+plt.xlabel('Coefficient Index')
+plt.ylabel('Coefficient Magnitude')
+plt.legend()
+plt.tight_layout()
+plt.show()
 ```
 
-```sh
-[ 0.66774318 -0.24270768 -0.74702985 -0.51793979 -1.01537406 -1.3794731
-  1.17522188  0.27990805  3.45835726  0.99527175  2.76878217  0.11553513
- -0.53013844  0.5256027  -0.60483693  0.44920371  0.41453377]
-```
+![](https://zyz9066.github.io/images/507/a2q2b.png)
 
-Train multiple versions of model on the training set, using values $$\lambda = 1, 5, 10, 25, 50, 75, 100, 250, 500, 750, 1000$$. Show the $$R^2$$ score of model on the training and the test set changes according to $$\lambda$$:
+Train multiple versions of model on the training set, using values $$\lambda = 1, 5, 10, 25, 50, 75, 100, 250, 500, 750, 1000$$. Make a plot that shows the $$R^2$$ score of model on the training and the test set changes according to $$\lambda$$:
 
 ```python
 from sklearn.linear_model import Ridge
@@ -79,52 +83,82 @@ for alpha in lambdas:
   rr.fit(xTrain, yTrain)
   ridge_train_score = rr.score(xTrain,yTrain)
   ridge_test_score = rr.score(xTest, yTest)
-  print("ridge regression train score (lambda={}): {}".format(alpha, ridge_train_score))
-  print("ridge regression test score (lambda={}): {}\n".format(alpha, ridge_test_score))
+  print("ridge regression train_score (lambda={}): {}".format(alpha, ridge_train_score))
+  print("ridge regression test_score (lambda={}): {}\n".format(alpha, ridge_test_score))
   train_scores.append(ridge_train_score)
   test_scores.append(ridge_test_score)
   if ridge_test_score > max_score:
     max_score = ridge_test_score
     best_lambda = alpha
+print('Best test_score: ' + max_score)
+print('Best lambda value: ' + best_lambda)
 ```
 
 ```sh
-ridge regression train score (lambda=1): 0.21036066672760512
-ridge regression test score (lambda=1): 0.029849131984993615
+ridge regression train_score (lambda=1): 0.21036066672760512
+ridge regression test_score (lambda=1): 0.029849131984993615
 
-ridge regression train score (lambda=5): 0.21021533304377527
-ridge regression test score (lambda=5): 0.03440747021886592
+ridge regression train_score (lambda=5): 0.21021533304377527
+ridge regression test_score (lambda=5): 0.03440747021886592
 
-ridge regression train score (lambda=10): 0.20979301155579222
-ridge regression test score (lambda=10): 0.039494074527527956
+ridge regression train_score (lambda=10): 0.20979301155579222
+ridge regression test_score (lambda=10): 0.039494074527527956
 
-ridge regression train score (lambda=25): 0.20730028335518547
-ridge regression test score (lambda=25): 0.05143990765830231
+ridge regression train_score (lambda=25): 0.20730028335518547
+ridge regression test_score (lambda=25): 0.05143990765830231
 
-ridge regression train score (lambda=50): 0.200667514883452
-ridge regression test score (lambda=50): 0.06364636760246345
+ridge regression train_score (lambda=50): 0.200667514883452
+ridge regression test_score (lambda=50): 0.06364636760246345
 
-ridge regression train score (lambda=75): 0.19264950767997058
-ridge regression test score (lambda=75): 0.06999475532603039
+ridge regression train_score (lambda=75): 0.19264950767997058
+ridge regression test_score (lambda=75): 0.06999475532603039
 
-ridge regression train score (lambda=100): 0.18425782721905504
-ridge regression test score (lambda=100): 0.07294112699192068
+ridge regression train_score (lambda=100): 0.18425782721905504
+ridge regression test_score (lambda=100): 0.07294112699192068
 
-ridge regression train score (lambda=250): 0.14072348984759375
-ridge regression test score (lambda=250): 0.0669484700877866
+ridge regression train_score (lambda=250): 0.14072348984759375
+ridge regression test_score (lambda=250): 0.0669484700877866
 
-ridge regression train score (lambda=500): 0.09753514977549305
-ridge regression test score (lambda=500): 0.0476158268753597
+ridge regression train_score (lambda=500): 0.09753514977549305
+ridge regression test_score (lambda=500): 0.0476158268753597
 
-ridge regression train score (lambda=750): 0.07347976540616152
-ridge regression test score (lambda=750): 0.03424846910983148
+ridge regression train_score (lambda=750): 0.07347976540616152
+ridge regression test_score (lambda=750): 0.03424846910983148
 
-ridge regression train score (lambda=1000): 0.05833862843834714
-ridge regression test score (lambda=1000): 0.02520355472544611
+ridge regression train_score (lambda=1000): 0.05833862843834714
+ridge regression test_score (lambda=1000): 0.02520355472544611
 
-Best test score:  0.07294112699192068
+Best test_score:  0.07294112699192068
 Best lambda value:  100
 ```
+
+```Python
+plt.plot(lambdas,train_scores,label='train')
+plt.plot(lambdas,test_scores,label='test')
+plt.xlabel('lambda')
+plt.ylabel('score')
+plt.legend()
+plt.tight_layout()
+plt.show()
+```
+
+![](https://zyz9066.github.io/images/507/a2q2c1.png)
+
+```Python
+fig = plt.figure()
+ax = plt.subplot(111)
+
+for alpha, coefs in zip(lambdas, rr_coefs):
+    ax.plot(np.arange(M),coefs[0],alpha=0.5,linestyle='none',marker='*',label='$\lambda = {}$'.format(alpha))
+
+plt.xlabel('Coefficient Index')
+plt.ylabel('Coefficient Magnitude')
+plt.legend(bbox_to_anchor=[1,0.5],loc='center left')
+plt.tight_layout()
+plt.show()
+```
+
+![](https://zyz9066.github.io/images/507/a2q2c2.png)
 
 We have the value of $$\lambda$$ which gives us the best generalization performance.  Use this model to predict the $$y$$ values for the data `xValidation`:
 
@@ -137,14 +171,16 @@ rr.predict(xValidation)
 By inspecting the vector $$\boldsymbol{\omega}$$ obtained for the best model, we can find which dimensions of $$x$$ are important for predicting $$y$$, and which are irrelevant:
 
 ```python
-print((lr.coef_[0] - rr.coef_[0])**2)
+plt.plot(np.arange(M),lr.coef_[0],alpha=0.5,linestyle='none',marker='o',label='$\lambda = 0$')
+plt.plot(np.arange(M),rr.coef_[0],alpha=0.5,linestyle='none',marker='*',label=r'$\lambda = {}$'.format(best_lambda))
+plt.xlabel('Coefficient Index')
+plt.ylabel('Coefficient Magnitude')
+plt.legend()
+plt.tight_layout()
+plt.show()
 ```
 
-```sh
-[0.02288555 0.01552465 0.08018458 0.01960193 0.20270853 0.22865919
- 0.133583   0.0033897  1.46370673 0.17417995 1.03703892 0.02954318
- 0.00509878 0.01711355 0.05363577 0.01323473 0.0314061 ]
-```
+![](https://zyz9066.github.io/images/507/a2q2f.png)
 
 ### Ridge Regression
 Self-defined Ridge Regression model:

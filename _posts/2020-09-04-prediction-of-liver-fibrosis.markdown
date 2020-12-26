@@ -39,63 +39,63 @@ scaler.fit(X_train)
 X_train_std = scaler.transform(X_train)
 X_test_std = scaler.transform(X_test)
 reg.fit(X_train_std, y_train)
-print("score of train std: " + str(reg.score(X_train_std, y_train)))
-print("score of val std: " + str(reg.score(X_test_std, y_test)))
+print("score of train_std: " + str(reg.score(X_train_std, y_train)))
+print("score of test_std: " + str(reg.score(X_test_std, y_test)))
 ```
 
 ```sh
-score of train std: 0.02317700812806467
-score of test std: -0.015362922483792785
+score of train_std: 0.02317700812806467
+score of test_std: -0.015362922483792785
 ```
 
 ```python
 from sklearn.svm import SVC
 svc = SVC(C=1.0, coef0=0.0, degree=3, gamma='auto', kernel='rbf')
 svc.fit(X_train_std, y_train)
-print("Training set accuracy: " + str(svc.score(X_train_std, y_train)))
-print("Validate set accuracy: " + str(svc.score(X_test_std, y_test)))
+print("Training accuracy: " + str(svc.score(X_train_std, y_train)))
+print("Validate accuracy: " + str(svc.score(X_test_std, y_test)))
 ```
 
 ```sh
-Training set score: 0.759927797833935
-Test set score: 0.26353790613718414
+Training accuracy: 0.759927797833935
+Test accuracy: 0.26353790613718414
 ```
 
 ```python
 svc = SVC(C=1.0, coef0=0.0, degree=3, gamma='auto', kernel='poly')
 svc.fit(X_train_std, y_train)
-print("Training set accuracy: " + str(svc.score(X_train_std, y_train)))
-print("Test set accuracy: " + str(svc.score(X_test_std, y_test)))
+print("Training accuracy: " + str(svc.score(X_train_std, y_train)))
+print("Test accuracy: " + str(svc.score(X_test_std, y_test)))
 ```
 
 ```sh
-Training set score: 0.9657039711191335
-Test set score: 0.2779783393501805
+Training accuracy: 0.9657039711191335
+Test accuracy: 0.2779783393501805
 ```
 
 ```python
 from sklearn.svm import SVR
 svr = SVR(C=1.0, coef0=0.0, degree=3, gamma='auto', kernel='rbf')
 svr.fit(X_train_std, y_train)
-print("Training set score: " + str(svr.score(X_train_std, y_train)))
-print("Test set score: " + str(svr.score(X_test_std, y_test)))
+print("Training score: " + str(svr.score(X_train_std, y_train)))
+print("Test score: " + str(svr.score(X_test_std, y_test)))
 ```
 
 ```sh
-Training set score: 0.5123633575720238
-Test set score: -0.12338287175953577
+Training score: 0.5123633575720238
+Test score: -0.12338287175953577
 ```
 
 ```python
 svr = SVR(C=1.0, coef0=0.0, degree=3, gamma='auto', kernel='poly')
 svr.fit(X_train_std, y_train)
-print("Training set score: " + str(svr.score(X_train_std, y_train)))
-print("Test set score: " + str(svr.score(X_test_std, y_test)))
+print("Training score: " + str(svr.score(X_train_std, y_train)))
+print("Test score: " + str(svr.score(X_test_std, y_test)))
 ```
 
 ```sh
-Training set score: 0.7101103374624762
-Test set score: -0.08247148605051358
+Training score: 0.7101103374624762
+Test score: -0.08247148605051358
 ```
 
 ```python
