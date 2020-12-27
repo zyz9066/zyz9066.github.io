@@ -501,15 +501,17 @@ The posterior mean $$\mu$$ is a vector of weights of the basis functions. Calcul
 
 ```python
 pred_mean = np.dot(zTrain, clf.coef_)
-print(pred_mean)
+
+from matplotlib.ticker import MaxNLocator
+
+plt.plot(pred_mean, marker='o', linestyle='none', label='predictive mean')
+plt.plot(xTrain, marker='o', linestyle='none', label='observed data')
+plt.gca().xaxis.set_major_locator(MaxNLocator(integer=True))
+plt.legend()
+plt.show()
 ```
 
-```sh
-[ 3.0933241 ,  4.06348034,  8.07230099,  9.73016224, 18.76332112,
- 19.10832937, 18.68652854, 16.12938244, 13.0058251 , 12.72256587,
- 14.41302232, 15.19246341, 15.17912201, -1.32959368, -0.31680214,
-  6.34604047,  6.40219723,  6.41021178,  5.68035451,  4.77506659]
-```
+![](https://zyz9066.github.io/images/507/a3q5c.png)
 
 Calculate the posterior covariance over weights $$\Sigma = \text{Cov}(\omega\mid D)$$, extract the diagonal of $$\Sigma$$ and obtain the posterior variance, and use it to show $$\pm 2$$ standard deviation error on the part in previous part.
 
