@@ -451,7 +451,7 @@ plt.show()
 ## Regression with basis functions
 Use the file [*LinearRegression.mat*](https://github.com/zyz9066/Statistical-Learning/blob/master/Assignment%203/LinearRegression.mat), in which there exists training data `xTrain` (a vector of length $$N=20$$) with outputs `tTrain`. Here is to train a nonlinear regression model form $$x$$ to $$t$$ using basis functions.
 
-Use a 50-dimensional basis-set, i.e. the 'feature-vector' $$z(x)$$ should be 50-dimensional with $$z_i()x = 2\exp{(-(x-i)^2/\sigma^2)}$$ with $$\sigma=5$$ and $$i=1, \cdots, 50$$. Calculate the $$50\times N$$ matrix `zTrain` for which the $$n$$-th row is $$z(x_n)$$.
+Use a 50-dimensional basis-set, i.e. the 'feature-vector' $$z(x)$$ should be 50-dimensional with $$z_i()x = 2\exp{(-(x-i)^2/\sigma^2)}$$ with $$\sigma=5$$ and $$i=1, \cdots, 50$$. Make a plot of the 50 basis functions (use the x-values in `xPlot`):
 
 ```python
 mat_contents = sio.loadmat('LinearRegression.mat')
@@ -461,6 +461,16 @@ xTrain = mat_contents['xTrain']
 def z_i(x, i, sigma=5):
   return 2 * np.exp(-(x-i)**2 / sigma**2)
 
+for i in range(1, 51):
+  plt.plot(xPlot, z_i(xPlot, i))
+plt.show()
+```
+
+![](https://zyz9066.github.io/images/507/a3q5a1.png)
+
+Calculate the $$50\times N$$ matrix `zTrain` for which the $$n$$-th row is $$z(x_n)$$:
+
+```python
 zTrain = np.zeros((len(xTrain), 50))
 for i in range(1, 51):
   zTrain[:,i-1] = np.apply_along_axis(z_i, 1, xTrain, i).ravel()
