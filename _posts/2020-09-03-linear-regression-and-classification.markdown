@@ -481,28 +481,21 @@ plt.show()
 
 ![](https://zyz9066.github.io/images/507/a3q5a2.png)
 
-Using $$\alpha = \beta = 1$$, calculate the posterior mean $$\mu = E(\omega\mid D)$$ (a $$50\times 1$$ vector).
+Using $$\alpha = \beta = 1$$, calculate the posterior mean $$\mu = E(\omega\mid D)$$ (a $$50\times 1$$ vector) and plot it:
 
 ```python
 from sklearn.linear_model import BayesianRidge
 
 clf = BayesianRidge(fit_intercept=False)
 clf.fit(zTrain, tTrain)
-print(clf.coef_)
+
+
+plt.plot(clf.coef_, marker='o', linestyle='none', label='posterior mean')
+plt.legend()
+plt.show()
 ```
 
-```sh
-[-0.85359015, -0.32112668,  0.27805609,  0.84023638,  1.2846117 ,
-  1.5661993 ,  1.67143022,  1.61046333,  1.4166837 ,  1.14851795,
-  0.87972489,  0.67374955,  0.55694806,  0.51307826,  0.50640161,
-  0.51572852,  0.55103838,  0.63898933,  0.79041783,  0.9776945 ,
-  1.14065164,  1.21651364,  1.17209996,  1.01770309,  0.79723665,
-  0.56470232,  0.36221017,  0.20933764,  0.10449261,  0.03308405,
- -0.02318672, -0.078981  , -0.14053661, -0.20335275, -0.25275552,
- -0.26798661, -0.22952866, -0.12764447,  0.03120923,  0.22320755,
-  0.41239652,  0.56076448,  0.63941573,  0.63666325,  0.56026409,
-  0.43348895,  0.28702263,  0.14989171,  0.04245379, -0.02671283]
-```
+![](https://zyz9066.github.io/images/507/a3q5b.png)
 
 The posterior mean $$\mu$$ is a vector of weights of the basis functions. Calculate the corresponding predictive mean by $$f_\mu(x) = E(t(x)\mid D) = \sum_{i=1}^{50} \mu_i z_i(x)$$.
 
