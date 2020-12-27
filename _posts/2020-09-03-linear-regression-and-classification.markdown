@@ -237,6 +237,31 @@ True
 We can see the weights are identical, so the self-defined model works right.
 
 ## Linear Classification
+The logistic function $$\sigma(s) = 1 / (1 + \exp(-s))$$ has connection with linear classification in Gaussian models. Plot $$\sigma(s)$$ as well as $$\log\sigma(-s)$$ as a function of $$s$$:
+
+```Python
+import numpy as np
+from scipy.special import expit
+
+s = np.arange(-10, 10)
+plt.plot(s, expit(s), label='$\sigma(s)$')
+plt.legend()
+plt.show()
+```
+
+![](https://zyz9066.github.io/images/507/a3q3b1.png)
+
+```Python
+s = np.arange(-100, 100)
+plt.plot(s, np.log(expit(s)), label='$\log(\sigma(s))$')
+plt.legend()
+plt.show()
+```
+
+![](https://zyz9066.github.io/images/507/a3q3b2.png)
+
+For large $$s>0$$, $$\log\sigma(s)\sim 0$$ and $$\log\sigma(-s)\sim -s$$.
+
 Use the file [*LinearClassification.mat*](https://github.com/zyz9066/Statistical-Learning/blob/master/Assignment%203/LinearClassification.mat), in which there exists training data `xTrain` (a matrix of size $$N = 500$$ with $$D = 2$$) with labels `tTrain`. Here is to train and compare two classification algorithms on this data.
 
 Calculate the means and covariances of each of the two classes, as well as the average covariance $$\Sigma = \frac{1}{2}(\Sigma_+ + \Sigma_-)$$. Use $$\mu_+, \mu_-$$ and $$\Sigma$$ to calculate the weight vector $$\boldsymbol{\omega}$$ and offset $$\omega_o$$ with Gaussian linear discriminant analysis method.
@@ -300,6 +325,34 @@ True
 True
 True
 ```
+Plot the data as well as the decision boundary into a 2D plot:
+
+```Python
+x_min, x_max = xTrain[:, 0].min() - .5, xTrain[:, 0].max() + .5
+y_min, y_max = xTrain[:, 1].min() - .5, xTrain[:, 1].max() + .5
+h = .02  # step size in the mesh
+xx, yy = np.meshgrid(np.arange(x_min, x_max, h), np.arange(y_min, y_max, h))
+Z = LDA.predict(np.c_[xx.ravel(), yy.ravel()])
+
+# Put the result into a color plot
+Z = Z.reshape(xx.shape)
+plt.figure(1, figsize=(4, 3))
+plt.pcolormesh(xx, yy, Z, cmap=plt.cm.Paired)
+
+# Plot also the training points
+plt.scatter(xTrain[:, 0], xTrain[:, 1], c=tTrain, edgecolors='k', cmap=plt.cm.Paired)
+plt.xlabel('$x_1$')
+plt.ylabel('$x_2$')
+
+plt.xlim(xx.min(), xx.max())
+plt.ylim(yy.min(), yy.max())
+plt.xticks(())
+plt.yticks(())
+
+plt.show()
+```
+
+![](https://zyz9066.github.io/images/507/a3q4b.png)
 
 Calculate the (training) error rate of the algorithm, i.e., the proportion of points in the training set which were misclassified by the model. Also calculate error rate on the test set using the data in `xTest` and `tTest`.
 
@@ -348,13 +401,52 @@ True
 True
 ```
 
-For each data point in test set, we can calculate its (scaled and signed) distance to the decision boundary (i.e. the values of $$y(x)$$ for each $$x$$):
+For each data point in test set, we can calculate its (scaled and signed) distance to the decision boundary (i.e. the values of $$y(x)$$ for each $$x$$). Make a plot which contains the bar chart of all points in the positive class (in blue) as well as a bar chart of the points in the negative class (in red):
 
 ```python
 dists = QDA.decision_function(xTest)
 dists_pos = dists[tTrain==1]
 dists_neg = dists[tTrain==-1]
+
+fig, axs = plt.subplots(2, sharey=True, tight_layout=True)
+
+axs[0].bar(range(len(dists_pos)), dists_pos, label='Positive Class')
+axs[0].legend()
+axs[1].bar(range(len(dists_neg)), dists_neg, color='red', label='Negative Class')
+axs[1].legend()
+plt.show()
 ```
+
+![](https://zyz9066.github.io/images/507/a3q4d.png)
+
+Calculate the decision boundary of the quadratic algorithm and plot it:
+
+```Python
+x_min, x_max = xTrain[:, 0].min() - .5, xTrain[:, 0].max() + .5
+y_min, y_max = xTrain[:, 1].min() - .5, xTrain[:, 1].max() + .5
+h = .02  # step size in the mesh
+xx, yy = np.meshgrid(np.arange(x_min, x_max, h), np.arange(y_min, y_max, h))
+Z = QDA.predict(np.c_[xx.ravel(), yy.ravel()])
+
+# Put the result into a color plot
+Z = Z.reshape(xx.shape)
+plt.figure(1, figsize=(4, 3))
+plt.pcolormesh(xx, yy, Z, cmap=plt.cm.Paired)
+
+# Plot also the training points
+plt.scatter(xTrain[:, 0], xTrain[:, 1], c=tTrain, edgecolors='k', cmap=plt.cm.Paired)
+plt.xlabel('$x_1$')
+plt.ylabel('$x_2$')
+
+plt.xlim(xx.min(), xx.max())
+plt.ylim(yy.min(), yy.max())
+plt.xticks(())
+plt.yticks(())
+
+plt.show()
+```
+
+![](https://zyz9066.github.io/images/507/a3q4e.png)
 
 ## Regression with basis functions
 Use the file [*LinearRegression.mat*](https://github.com/zyz9066/Statistical-Learning/blob/master/Assignment%203/LinearRegression.mat), in which there exists training data `xTrain` (a vector of length $$N=20$$) with outputs `tTrain`. Here is to train a nonlinear regression model form $$x$$ to $$t$$ using basis functions.
