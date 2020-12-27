@@ -532,7 +532,7 @@ plt.show()
 
 ![](https://zyz9066.github.io/images/507/a3q5d2.png)
 
-Calculate the predictive variance $$\text{Var}(r\mid D, x)$$ for each $$x$$ (use values in `xTrain`), and use it for showing $$f_\mu(x)\pm 2\sqrt{\text{Var}(t\mid D, x)}$$.
+Calculate the predictive variance $$\text{Var}(r\mid D, x)$$ for each $$x$$ (use values in `xTrain`), and use it to plot error bars for the predictive distribution, i.e. $$f_\mu(x)\pm 2\sqrt{\text{Var}(t\mid D, x)}$$.
 
 ```python
 pred_var = 1 + np.dot(np.dot(zTrain, clf.sigma_), zTrain.T).diagonal()
@@ -547,29 +547,10 @@ print(pred_var)
 ```
 
 ```python
-for i in range(len(pred_mean)):
-    print('{} (+/- {})'.format(round(pred_mean[i], 3), round(2*np.sqrt(pred_var[i]), 2)))
+plt.errorbar(range(len(xTrain)), pred_mean, yerr=2*np.sqrt(pred_var), marker='o', linestyle='none', label='predictive mean $\pm$ 2 std. dev.')
+plt.gca().xaxis.set_major_locator(MaxNLocator(integer=True))
+plt.legend()
+plt.show()
 ```
 
-```sh
-3.093 (+/- 2.59)
-4.063 (+/- 2.51)
-8.072 (+/- 2.47)
-9.73 (+/- 2.55)
-18.763 (+/- 2.61)
-19.108 (+/- 2.55)
-18.687 (+/- 2.58)
-16.129 (+/- 2.77)
-13.006 (+/- 2.72)
-12.723 (+/- 2.75)
-14.413 (+/- 2.79)
-15.192 (+/- 2.59)
-15.179 (+/- 2.92)
--1.33 (+/- 3.16)
--0.317 (+/- 3.09)
-6.346 (+/- 2.63)
-6.402 (+/- 2.58)
-6.41 (+/- 2.45)
-5.68 (+/- 2.56)
-4.775 (+/- 2.91)
-```
+![](https://zyz9066.github.io/images/507/a3q5e.png)
