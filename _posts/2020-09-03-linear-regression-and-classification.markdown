@@ -497,7 +497,7 @@ plt.show()
 
 ![](https://zyz9066.github.io/images/507/a3q5b.png)
 
-The posterior mean $$\mu$$ is a vector of weights of the basis functions. Calculate the corresponding predictive mean by $$f_\mu(x) = E(t(x)\mid D) = \sum_{i=1}^{50} \mu_i z_i(x)$$.
+The posterior mean $$\mu$$ is a vector of weights of the basis functions. Calculate the corresponding predictive mean by $$f_\mu(x) = E(t(x)\mid D) = \sum_{i=1}^{50} \mu_i z_i(x)$$ and plot the predictive mean and the observed training data into the same plot:
 
 ```python
 pred_mean = np.dot(zTrain, clf.coef_)
