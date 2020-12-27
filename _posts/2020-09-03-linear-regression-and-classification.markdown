@@ -474,7 +474,12 @@ Calculate the $$50\times N$$ matrix `zTrain` for which the $$n$$-th row is $$z(x
 zTrain = np.zeros((len(xTrain), 50))
 for i in range(1, 51):
   zTrain[:,i-1] = np.apply_along_axis(z_i, 1, xTrain, i).ravel()
+
+plt.matshow(zTrain)
+plt.show()
 ```
+
+![](https://zyz9066.github.io/images/507/a3q5a2.png)
 
 Using $$\alpha = \beta = 1$$, calculate the posterior mean $$\mu = E(\omega\mid D)$$ (a $$50\times 1$$ vector).
 
