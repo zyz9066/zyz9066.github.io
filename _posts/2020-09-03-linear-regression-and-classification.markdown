@@ -513,64 +513,24 @@ plt.show()
 
 ![](https://zyz9066.github.io/images/507/a3q5c.png)
 
-Calculate the posterior covariance over weights $$\Sigma = \text{Cov}(\omega\mid D)$$, extract the diagonal of $$\Sigma$$ and obtain the posterior variance, and use it to show $$\pm 2$$ standard deviation error on the part in previous part.
+Calculate the posterior covariance over weights $$\Sigma = \text{Cov}(\omega\mid D)$$ and display it:
+
+```Python
+plt.matshow(clf.sigma_)
+plt.show()
+```
+
+![](https://zyz9066.github.io/images/507/a3q5d1.png)
+
+Extract the diagonal of $$\Sigma$$ and obtain the posterior variance, and use it to plot $$\pm 2$$ standard deviation error on the bars in previous part:
 
 ```python
-for i in range(len(clf.coef_)):
-  print('{} (+/- {})'.format(round(clf.coef_[i], 3), round(2*np.sqrt(clf.sigma_.diagonal()[i]), 2)))
+plt.errorbar(np.arange(50), clf.coef_, yerr=2*np.sqrt(clf.sigma_.diagonal()), marker='o', linestyle='none', label='posterior mean $\pm$ 2 std. dev.')
+plt.legend()
+plt.show()
 ```
-```sh
--0.854 (+/- 2.66)
--0.321 (+/- 2.71)
-0.278 (+/- 2.15)
-0.84 (+/- 2.03)
-1.285 (+/- 1.98)
-1.566 (+/- 1.84)
-1.671 (+/- 1.83)
-1.61 (+/- 1.77)
-1.417 (+/- 1.76)
-1.149 (+/- 1.76)
-0.88 (+/- 1.68)
-0.674 (+/- 1.74)
-0.557 (+/- 1.62)
-0.513 (+/- 1.71)
-0.506 (+/- 1.57)
-0.516 (+/- 1.61)
-0.551 (+/- 1.6)
-0.639 (+/- 1.52)
-0.79 (+/- 1.6)
-0.978 (+/- 1.47)
-1.141 (+/- 1.51)
-1.217 (+/- 1.52)
-1.172 (+/- 1.34)
-1.018 (+/- 1.46)
-0.797 (+/- 1.56)
-0.565 (+/- 1.53)
-0.362 (+/- 1.71)
-0.209 (+/- 1.82)
-0.104 (+/- 1.6)
-0.033 (+/- 1.37)
--0.023 (+/- 1.4)
--0.079 (+/- 1.36)
--0.141 (+/- 1.09)
--0.203 (+/- 1.01)
--0.253 (+/- 1.27)
--0.268 (+/- 1.28)
--0.23 (+/- 1.09)
--0.128 (+/- 1.25)
-0.031 (+/- 1.44)
-0.223 (+/- 1.37)
-0.412 (+/- 1.37)
-0.561 (+/- 1.38)
-0.639 (+/- 1.2)
-0.637 (+/- 1.33)
-0.56 (+/- 1.53)
-0.433 (+/- 1.37)
-0.287 (+/- 1.44)
-0.15 (+/- 1.53)
-0.042 (+/- 1.32)
--0.027 (+/- 2.73)
-```
+
+![](https://zyz9066.github.io/images/507/a3q5d2.png)
 
 Calculate the predictive variance $$\text{Var}(r\mid D, x)$$ for each $$x$$ (use values in `xTrain`), and use it for showing $$f_\mu(x)\pm 2\sqrt{\text{Var}(t\mid D, x)}$$.
 
