@@ -8,3 +8,6 @@ categories: medical imaging
 Blood oxygen level dependent functional magnetic resonance imaging (BOLD fMRI) is the most common method for measuring human brain activity non-invasively in-vivo. BOLD fMRI images are 4-dimensional, consisting of a time series of 3d volume, acquired in quick succession (every 1 or 2 seconds) typically over a period of 8 --- 15 minutes.
 
 Here, we will work with "[*multisubject, multimodal face processing*](https://openneuro.org/datasets/ds000117/versions/1.0.4)" dataset available at *openneuro.org*. This dataset involves presentation of images of faces to the subject while acquiring BOLD fMRI images of the subject's brain activity. Here, we will preprocess these scans and then, localize the brain area that processes faces.
+
+## Preparation
+Install both *afni* and *FSL* software packages on a Linux or Mac operating system. On Windows, install VirtualBox and then download [*Neurodebian*](https://neuro.debian.net/) and open it in VirtualBox by selecting `File->Import Appliance`. *Neurodebian* is a Linux distribution of the Debian flavor.
