@@ -27,4 +27,5 @@ Briefly, task-based analysis procedure is as follows:
 2. Load the *clean_bold.nii.gz* image output by *pipeline.sh* and *events.tsv* which corresponding to each BOLD image;
 3. Using the timing form *events.tsv*, create an "ideal time series" that represents how the brain should react to the stimulus (face=1, no face=0);
 4. Convolve the "ideal time series" the [hemodynamic response function (HRF)](https://github.com/zyz9066/Image-Analysis/blob/master/BOLD%20fMRI/hrf.csv), we can use *pandas* load *hrf.csv* `hrf = pd.read_csv('hrf.csv', header=None)`;
-5. 
+5. Correlate the convolved ideal with the BOLD signal in each voxel;
+6. Visualize the correlation map to see where in the brain the activation is strongest.
