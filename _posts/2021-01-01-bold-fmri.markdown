@@ -20,3 +20,10 @@ Basic preprocessing includes motion correction, bandpass filtering, spatial smoo
 ![](https://zyz9066.github.io/images/516/3/ScreenShot.png)
 
 Above is a screenshot of the directory after running *pipeline.sh*.
+
+## Localize task activation
+Briefly, task-based analysis procedure is as follows:
+1. Clean the BOLD images (using *pipeline.sh*);
+2. Load the *clean_bold.nii.gz* image output by *pipeline.sh* and *events.tsv* which corresponding to each BOLD image;
+3. Using the timing form *events.tsv*, create an "ideal time series" that represents how the brain should react to the stimulus (face=1, no face=0);
+4. Convolve the "ideal time series" the [hemodynamic response function (HRF)]()
