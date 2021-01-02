@@ -10,4 +10,9 @@ Blood oxygen level dependent functional magnetic resonance imaging (BOLD fMRI) i
 Here, we will work with "[*multisubject, multimodal face processing*](https://openneuro.org/datasets/ds000117/versions/1.0.4)" dataset available at *openneuro.org*. This dataset involves presentation of images of faces to the subject while acquiring BOLD fMRI images of the subject's brain activity. Here, we will preprocess these scans and then, localize the brain area that processes faces.
 
 ## Preparation
-Install both *afni* and *FSL* software packages on a Linux or Mac operating system. On Windows, install VirtualBox and then download [*Neurodebian*](https://neuro.debian.net/) and open it in VirtualBox by selecting `File->Import Appliance`. *Neurodebian* is a Linux distribution of the Debian flavor.
+We need both *afni* and *FSL* software packages. Install VirtualBox and then download [*Neurodebian*](https://neuro.debian.net/) and open it in VirtualBox by selecting `File->Import Appliance`. *Neurodebian* is a Linux distribution of the Debian flavor.
+
+Once installed, we will be able to run the preprocessing pipeline on the data from *openneuro*.
+
+## Basic pre-preprocessing
+Basic preprocessing includes motion correction, bandpass filtering, spatial smoothing. Run pre-processing pipeline [*pipeline.sh*](https://github.com/zyz9066/Image-Analysis/blob/master/BOLD%20fMRI/pipeline.sh) from the command terminal. The pipeline will take roughly 5 --- 10 minutes to run, depending on hardware setup. The processing pipeline will produce a final output called *clean_bold.nii.gz*, we will use this image for further work.
