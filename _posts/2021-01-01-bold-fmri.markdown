@@ -7,7 +7,7 @@ categories: medical imaging
 ## Motivation
 Blood oxygen level dependent functional magnetic resonance imaging (BOLD fMRI) is the most common method for measuring human brain activity non-invasively in-vivo. BOLD fMRI images are 4-dimensional, consisting of a time series of 3d volume, acquired in quick succession (every 1 or 2 seconds) typically over a period of 8 --- 15 minutes.
 
-Here, we will work with "[*multisubject, multimodal face processing*](https://openneuro.org/datasets/ds000117/versions/1.0.4)" dataset available at *openneuro.org*. This dataset involves presentation of images of faces to the subject while acquiring BOLD fMRI images of the subject's brain activity. Here, we will preprocess these scans and then, localize the brain area that processes faces.
+Here, we will work with "[*multisubject, multimodal face processing*](https://openneuro.org/datasets/ds000117/versions/1.0.4)" dataset (subject-01) available at *openneuro.org*. This dataset involves presentation of images of faces to the subject while acquiring BOLD fMRI images of the subject's brain activity. Here, we will preprocess these scans and then, localize the brain area that processes faces.
 
 ## Preparation
 We need both *afni* and *FSL* software packages. Install VirtualBox and then download [*Neurodebian*](https://neuro.debian.net/) and open it in VirtualBox by selecting `File->Import Appliance`. *Neurodebian* is a Linux distribution of the Debian flavor.
@@ -16,3 +16,7 @@ Once installed, we will be able to run the preprocessing pipeline on the data fr
 
 ## Basic pre-preprocessing
 Basic preprocessing includes motion correction, bandpass filtering, spatial smoothing. Run pre-processing pipeline [*pipeline.sh*](https://github.com/zyz9066/Image-Analysis/blob/master/BOLD%20fMRI/pipeline.sh) from the command terminal. The pipeline will take roughly 5 --- 10 minutes to run, depending on hardware setup. The processing pipeline will produce a final output called *clean_bold.nii.gz*, we will use this image for further work.
+
+![](https://zyz9066.github.io/images/516/3/ScreenShot.png)
+
+Above is a screenshot of the directory after running *pipeline.sh*.
