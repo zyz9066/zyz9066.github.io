@@ -149,3 +149,9 @@ plt.imshow(np.rot90(mi_raw.max(2)), vmin=-0.25, vmax=0.25); plt.colorbar();
 ![](https://zyz9066.github.io/images/516/3/minv.png)
 
 The correlations are stronger when pre-processing is included.
+
+## Multi-subject analysis
+The dataset on *openneuro* contains scans from 16 subjects. In previous part, we only processed data from *sub-01*. Each subject actually contains multiple BOLD fMRI runs, here we just use T1 and first fMRI from all 16 subjects. However, we may use all the BOLD scans from each subject and average the resulting correlation maps to produce a more clear correlation.
+
+### Batch processing
+Once we have all subjects, create a separate folder for each subject and place each subjects' data in their own separate folder. Then, run the pre-processing pipeline on each subject separately (this may take up to 1 hour). We can simply place the script in each subject's folder and run it as-is at the command line, or create a `for` loop surrounding the pre-processing code in the *pipeline.sh* file to loop over all subjects automatically.
