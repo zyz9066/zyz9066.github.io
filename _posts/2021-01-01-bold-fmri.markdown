@@ -1,4 +1,4 @@
-@@ -1,162 +0,0 @@
+6@@ -1,162 +0,0 @@
 @@ -1,157 +0,0 @@
 ---
 layout: post
@@ -198,3 +198,7 @@ nib.save(mi_nifti, 'mi_in_template.nii.gz')
 ```
 
 Display this grand average correlation map as an overlay on the "template brain" in *afni*, with a suitable threshold, showing the region of maximum correlation.
+
+![](https://zyz9066.github.io/images/516/3/a152.png)
+
+![](https://zyz9066.github.io/images/516/3/a152m.png)
