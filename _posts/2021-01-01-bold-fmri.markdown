@@ -31,6 +31,7 @@ Briefly, task-based analysis procedure is as follows:
 import nibabel as nib
 import pandas as pd
 import numpy as np
+import matplotlib.pyplot as plt
 
 clean_bold = nib.load('/clean_bold.nii.gz')
 events = pd.read_csv('/events.tsv', delimiter='\t')
@@ -54,11 +55,59 @@ plt.plot(hrf); plt.xlabel('time(seconds)');
 ![](https://zyz9066.github.io/images/516/3/hrf.png)
 
 ```python
-hrf = pd.read_csv('hrf.csv', header=None).values.ravel()
-plt.plot(hrf); plt.xlabel('time(seconds)');
+import scipy.signal as signal
+
+conved = signal.convolve(ts, hrf, mode='full')[:ts.shape[0]]
+
+plt.plot(ts); plt.plot(conved*3); plt.xlabel('time(seconds)');
 ```
 
 ![](https://zyz9066.github.io/images/516/3/cts.png)
 
 5. Correlate the convolved ideal with the BOLD signal in each voxel;
+
+```python
+conved = conved[::int(tr)]
+img = clean_bold.get_fdata()
+
+meansub_img = img - np.expand_dims(img.mean(-1), 3)
+meansub_conved = conved - conved.mean()
+
+corrs = (meansub_img * meansub_conved).sum(-1) / \
+    np.sqrt((meansub_img * meansub_img).sum(-1)) / np.sqrt(np.dot(meansub_conved, meansub_conved))
+
+corrs[np.isnan(corrs)] = 0
+
+corrs_nifti = nib.Nifti1Image(corrs, clean_bold.affine)
+nib.save(corrs_nifti, 'corrs.nii.gz')
+```
+
+```python
+from sklearn.metrics import mutual_info_score
+
+def MI(a):
+    c_xy = np.histogram2d(a, conved)[0]
+    return mutual_info_score(None, None, contingency=c_xy)
+
+mi = np.apply_along_axis(MI, 3, img)
+```
+
 6. Visualize the correlation map to see where in the brain the activation is strongest.
+
+```python
+plt.imshow(np.rot90(corrs.max(2))); plt.colorbar();
+plt.imshow(np.rot90(corrs.max(2)), vmin=-0.25, vmax=0.25); plt.colorbar();
+```
+
+![](https://zyz9066.github.io/images/516/3/corr.png)
+
+![](https://zyz9066.github.io/images/516/3/corrv.png)
+
+```python
+plt.imshow(np.rot90(mi.max(2))); plt.colorbar();
+plt.imshow(np.rot90(mi.max(2)), vmin=-0.25, vmax=0.25); plt.colorbar();
+```
+
+![](https://zyz9066.github.io/images/516/3/mi.png)
+
+![](https://zyz9066.github.io/images/516/3/miv.png)
