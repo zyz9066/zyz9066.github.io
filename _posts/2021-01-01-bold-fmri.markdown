@@ -90,6 +90,9 @@ def MI(a):
     return mutual_info_score(None, None, contingency=c_xy)
 
 mi = np.apply_along_axis(MI, 3, img)
+
+mi_nifti = nib.Nifti1Image(mi, clean_bold.affine)
+nib.save(mi_nifti, path+str(i)+'/mi.nii.gz')
 ```
 
 6. Visualize the correlation map to see where in the brain the activation is strongest.
