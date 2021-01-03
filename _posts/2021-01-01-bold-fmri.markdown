@@ -176,3 +176,25 @@ Visualize the correlation map as an overlay on the T1 using *afni*. Increase the
 
 ### Group average
 Once we have obtained each subjects correlation map in their native T1 space, the last step is to bring all subjects into the same space and average the correlation map, to create a 'grand average' of where the brain processes faces. We can use "template brain" *MNI152_2009_template.nii.gz*. Using `flirt` or *ANTs*, register each subject's skull-stripped T1 to this template image and save the transform. Then, apply the tranform to the correlation map in T1 space, bringing each subjects' correlation map into template space. Finally, once all subjects' correlation maps have been aligned to the "template brain", average them, creating a "grand average" correlation map.
+
+```python
+corrs_nifti = nib.load('1/corrs_in_template.nii.gz')
+corrs = corrs_nifti.get_fdata()
+for i in range(2, 17):
+    corrs += nib.load(str(i)+'/corrs_in_template.nii.gz').get_fdata()
+
+corrs /= 16
+corrs_nifti = nib.Nifti1Image(corrs, corrs_nifti.affine)
+nib.save(corrs_nifti, 'corrs_in_template.nii.gz')
+
+mi_nifti = nib.load('1/mi_in_template.nii.gz')
+mi = mi_nifti.get_fdata()
+for i in range(2, 17):
+    mi += nib.load(str(i)+'/mi_in_template.nii.gz').get_fdata()
+
+mi /= 16
+mi_nifti = nib.Nifti1Image(mi, mi_nifti.affine)
+nib.save(mi_nifti, 'mi_in_template.nii.gz')
+```
+
+Display this grand average correlation map as an overlay on the "template brain" in *afni*, with a suitable threshold, showing the region of maximum correlation.
