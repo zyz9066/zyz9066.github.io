@@ -202,3 +202,5 @@ Display this grand average correlation map as an overlay on the "template brain"
 ![](https://zyz9066.github.io/images/516/3/a152.png)
 
 ![](https://zyz9066.github.io/images/516/3/a152m.png)
+
+Some faces may result in higher BOLD activation than others. Using *events.tsv*, and the knowledge that the hemodynamic response is roughly 4.5 seconds after the onset of the face, locate the area in the brain that distinguishes famous faces and unfamiliar faces. This can be done by isolating all BOLD time points 4.5 seconds after the onset of a famous face (F1) and also isolating all BOLD time points 4.5 seconds after onset of unfamiliar face (F2) and then performing a t-test (F1-F2) which will then give a t-value and a p-value in each voxel showing which voxel had significant differences in their response from famous to unfamiliar faces. Show this grand average t-map overlayed on the *template brain*.
