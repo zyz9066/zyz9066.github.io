@@ -1,3 +1,4 @@
+@@ -1,162 +0,0 @@
 @@ -1,157 +0,0 @@
 ---
 layout: post
@@ -160,3 +161,11 @@ nib.save(corrs_nifti, 'corrs.nii.gz')
 mi_nifti = nib.Nifti1Image(mi, clean_bold.affine)
 nib.save(mi_nifti, path+str(i)+'/mi.nii.gz')
 ```
+
+Using *epireg.mat*, bring the correlation map into the subject's T1 space (see below):
+
+```sh
+flirt -in corrs.nii.gz -ref t1.nii.gz -applyxfm -init epireg.mat -out corrs_in_t1.nii.gz
+```
+
+Visualize the correlation map as an overlay on the T1 using *afni*. Increase the threshold to find the brain area of maximum activation, and show each subject's correlation map overlayed on the T1 in *afni* with a threshold of 0.15. Show 16 rows of images with each subject's correlation map overlayed on the T1 (axial view):
