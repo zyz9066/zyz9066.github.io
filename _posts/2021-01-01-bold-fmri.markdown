@@ -204,3 +204,32 @@ Display this grand average correlation map as an overlay on the "template brain"
 ![](https://zyz9066.github.io/images/516/3/a152m.png)
 
 Some faces may result in higher BOLD activation than others. Using *events.tsv*, and the knowledge that the hemodynamic response is roughly 4.5 seconds after the onset of the face, locate the area in the brain that distinguishes famous faces and unfamiliar faces. This can be done by isolating all BOLD time points 4.5 seconds after the onset of a famous face (F1) and also isolating all BOLD time points 4.5 seconds after onset of unfamiliar face (F2) and then performing a t-test (F1-F2) which will then give a t-value and a p-value in each voxel showing which voxel had significant differences in their response from famous to unfamiliar faces. Show this grand average t-map overlayed on the *template brain*.
+
+```python
+import scipy.stats as stats
+
+for i in range(1, 17):
+    clean_bold = nib.load(str(i)+'/clean_bold.nii.gz')
+    img = clean_bold.get_fdata()
+    tr = clean_bold.header.get_zooms()[-1]
+    events = pd.read_csv(str(i)+'/events.tsv', delimiter='\t')
+    f1id = np.round((events['onset'][events['stim_type'] != 'FAMOUS'].values+4.5)/tr).astype('uint16')
+    f2id = np.round((events['onset'][events['stim_type'] != 'UNFAMILIAR'].values+4.5)/tr).astype('uint16')
+    f1 = img[:, :, :, f1id]
+    f2 = img[:, :, :, f2id]
+    tmap = stats.ttest_ind(f1, f2, axis=3)[0]
+    tmap_nifti = nib.Nifti1Image(tmap, clean_bold.affine)
+    nib.save(tmap_nifti, str(i)+'/tmap.nii.gz')
+
+
+tmap_nifti = nib.load('1/tmap_in_template.nii.gz')
+tmap = tmap_nifti.get_fdata()
+for i in range(2, 17):
+    tmap += nib.load(str(i)+'/tmap_in_template.nii.gz').get_fdata()
+
+tmap /= 16
+tmap_nifti = nib.Nifti1Image(tmap, tmap_nifti.affine)
+nib.save(tmap_nifti, 'tmap_in_template.nii.gz')
+```
+
+![](https://zyz9066.github.io/images/516/3/a152t.png)
