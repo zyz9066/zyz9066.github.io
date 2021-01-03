@@ -114,3 +114,38 @@ plt.imshow(np.rot90(mi.max(2)), vmin=-0.25, vmax=0.25); plt.colorbar();
 ![](https://zyz9066.github.io/images/516/3/mi.png)
 
 ![](https://zyz9066.github.io/images/516/3/miv.png)
+
+Use the above steps, we find the brain area which correlates to viewing of faces. We displayed a figure with maximum z-slice among 46 slices and a final activation map using `imshow` with `vmin=-0.25` and `vmax=0.25`. There are some clusters near the back of the brain with high correlation values.
+
+### No pre-processing
+Repeat the above, but leave out step 1 (use *bold.nii.gz*, without pre-processing, instead of the *clean_bold.nii.gz* output by *pipeline.sh*):
+
+```python
+raw = nib.load('bold.nii.gz').get_fdata()
+
+meansub_raw = raw - np.expand_dims(raw.mean(-1), 3)
+
+corrs_raw = (meansub_raw * meansub_conved).sum(-1) / \
+    np.sqrt((meansub_raw * meansub_raw).sum(-1)) / np.sqrt(np.dot(meansub_conved, meansub_conved))
+
+corrs_raw[np.isnan(corrs_raw)] = 0
+plt.imshow(np.rot90(corrs_raw.max(2))); plt.colorbar();
+plt.imshow(np.rot90(corrs_raw.max(2)), vmin=-0.25, vmax=0.25); plt.colorbar();
+```
+
+![](https://zyz9066.github.io/images/516/3/corrn.png)
+
+![](https://zyz9066.github.io/images/516/3/corrnv.png)
+
+```python
+mi_raw = np.apply_along_axis(MI, 3, raw)
+
+plt.imshow(np.rot90(mi_raw.max(2))); plt.colorbar();
+plt.imshow(np.rot90(mi_raw.max(2)), vmin=-0.25, vmax=0.25); plt.colorbar();
+```
+
+![](https://zyz9066.github.io/images/516/3/min.png)
+
+![](https://zyz9066.github.io/images/516/3/minv.png)
+
+The correlations are stronger when pre-processing is included.
