@@ -168,4 +168,11 @@ Using *epireg.mat*, bring the correlation map into the subject's T1 space (see b
 flirt -in corrs.nii.gz -ref t1.nii.gz -applyxfm -init epireg.mat -out corrs_in_t1.nii.gz
 ```
 
-Visualize the correlation map as an overlay on the T1 using *afni*. Increase the threshold to find the brain area of maximum activation, and show each subject's correlation map overlayed on the T1 in *afni* with a threshold of 0.15. Show 16 rows of images with each subject's correlation map overlayed on the T1 (axial view):
+Visualize the correlation map as an overlay on the T1 using *afni*. Increase the threshold to find the brain area of maximum activation, and show each subject's correlation map overlayed on the T1 in *afni* with a threshold of 0.15. Here we just show one image with *sub-01* correlation map overlayed on the T1 (axial view) as well as for mutual information:
+
+![](https://zyz9066.github.io/images/516/3/a1.png)
+
+![](https://zyz9066.github.io/images/516/3/a1m.png)
+
+### Group average
+Once we have obtained each subjects correlation map in their native T1 space, the last step is to bring all subjects into the same space and average the correlation map, to create a 'grand average' of where the brain processes faces. We can use "template brain" *MNI152_2009_template.nii.gz*. Using `flirt` or *ANTs*, register each subject's skull-stripped T1 to this template image and save the transform. Then, apply the tranform to the correlation map in T1 space, bringing each subjects' correlation map into template space. Finally, once all subjects' correlation maps have been aligned to the "template brain", average them, creating a "grand average" correlation map.
