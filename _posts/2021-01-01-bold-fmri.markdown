@@ -1,3 +1,4 @@
+@@ -1,157 +0,0 @@
 ---
 layout: post
 title:  "BOLD fMRI"
@@ -155,3 +156,5 @@ The dataset on *openneuro* contains scans from 16 subjects. In previous part, we
 
 ### Batch processing
 Once we have all subjects, create a separate folder for each subject and place each subjects' data in their own separate folder. Then, run the pre-processing pipeline on each subject separately (this may take up to 1 hour). We can simply place the script in each subject's folder and run it as-is at the command line, or create a `for` loop surrounding the pre-processing code in the *pipeline.sh* file to loop over all subjects automatically.
+
+Once each subject has been pre-processed, run the correlation analysis as in previous part on each subject and save the output as a *.nii* file into the same subject's directory. Be sure to keep the same header transform as the input image when saving using *nibabel*, otherwise the correlation map will not be in the same space (see below):
