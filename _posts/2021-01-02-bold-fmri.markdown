@@ -1,7 +1,7 @@
 ---
 layout: post
 title:  "BOLD fMRI"
-date:   2020-01-02 11:11:03 -0400
+date:   2021-01-02 11:11:03 -0400
 categories: medical imaging
 ---
 ## Motivation
