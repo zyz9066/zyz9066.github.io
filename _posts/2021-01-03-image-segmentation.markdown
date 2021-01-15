@@ -40,7 +40,7 @@ print(SNR(flair))
 
 Implement denoising techniques, apply them to the image. Show the noisy, denoised, and noisy minus denoised (method noise) image for the algorithm.
 
-### Bilateral filtering
+### Bilateral filtering (TBD)
 ```python
 def bilateralFilter(image, sigmaS=int(20/2.87), sigmaR=22, sampleS=None, sampleR=None):
 
@@ -186,6 +186,6 @@ plt.show()
 
 ![](https://zyz9066.github.io/images/516/4/bilateralm.png)
 
-### Non-local means
+### Non-local means (TBD)
 
-### Denoising autoencoder
+### Denoising autoencoder (TBD)
