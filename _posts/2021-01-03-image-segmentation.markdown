@@ -1,8 +1,8 @@
 ---
 layout: post
-title:  "Image Segmentation"
+title:  "Image Denoising & Segmentation"
 date:   2021-01-03 11:11:03 -0400
-categories: image analysis
+categories: computer vision
 ---
 ## Goals
 Implement a few simple denoising and segmentation algorithms.
@@ -42,27 +42,29 @@ Implement denoising techniques, apply them to the image. Show the noisy, denoise
 
 ### Bilateral filtering (TBD)
 ```python
-def bilateralFilter(image, sigmaS=int(20/2.87), sigmaR=22, sampleS=None, sampleR=None):
+def bilateralFilter(image, sigmaS=int(20/2.87), sigmaR=23, sampleS=None, sampleR=None):
 
-    def fftconvolve3d(image, kernel):
+    def fftconvolve3D(image, kernel):
+        def fft(array, shape):
+            fft = np.fft.fftn(array, s=shape)
+            return fft
+
+        def ifft(array):
+            ifft = np.fft.ifftn(array)
+            return ifft
+
+        def conv3D(array, kernel, shape):
+            conv = np.abs(ifft(fft(array, shape)*fft(kernel, shape)))
+            return conv
+
         # fft method
-        kerpad = np.zeros_like(image)
-        padf = (np.array(image.shape) - np.array(kernel.shape)) // 2
-        padb = (np.array(image.shape) + np.array(kernel.shape)) // 2
-        kerpad[padf[0]:padb[0], padf[1]:padb[1], padf[2]:padb[2]] = kernel
+        shape = np.array(image.shape) + np.array(kernel.shape) - 1
+        cfft = conv3D(image, kernel, shape)
+        row, col, dep = np.array(kernel.shape) // 2
 
-        # Pad the bottom and right side with zeros
-        nrows, ncols, ndeps = image.shape
-        image = np.pad(image, ((0, nrows-1), (0, ncols-1), (0, ndeps-1)),
-                       mode='constant')
-        kerpad = np.pad(kerpad, ((0, nrows-1), (0, ncols-1), (0, ndeps-1)),
-                        mode='constant')
-        cfft = np.fft.ifftn(np.fft.fftn(image) * np.fft.fftn(kerpad))
-        row, col, dep = nrows//2, ncols//2, ndeps//2
+        return cfft[row:-row, col:-col, dep:-dep]
 
-        return cfft.real[row:row+nrows, col:col+ncols, dep:dep+ndeps]
-
-    def interp3d(input_array, indices):
+    def interp3D(input_array, indices):
         '''Evaluate the input_array data at the indices given'''
 
         output = np.empty(indices[0].shape)
@@ -74,9 +76,9 @@ def bilateralFilter(image, sigmaS=int(20/2.87), sigmaR=22, sampleS=None, sampleR
         x1, y1, z1 = x0 + 1, y0 + 1, z0 + 1
 
         #Check if xyz1 is beyond array boundary:
-        x1[np.where(x1==input_array.shape[0])] = x0.max()
-        y1[np.where(y1==input_array.shape[1])] = y0.max()
-        z1[np.where(z1==input_array.shape[2])] = z0.max()
+        x1[x1==input_array.shape[0]] = x0.max()
+        y1[y1==input_array.shape[1]] = y0.max()
+        z1[z1==input_array.shape[2]] = z0.max()
 
         x, y, z = x_indices - x0, y_indices - y0, z_indices - z0
         output = (input_array[x0,y0,z0]*(1-x)*(1-y)*(1-z) +
@@ -153,23 +155,22 @@ def bilateralFilter(image, sigmaS=int(20/2.87), sigmaR=22, sampleS=None, sampleR
     kernel = np.exp(-0.5 * gridSqr)
 
     # convolve
-    blurData = fftconvolve3d(data, kernel)
-    blurWeights = fftconvolve3d(weights, kernel)
+    blurData = fftconvolve3D(data, kernel)
+    blurWeights = fftconvolve3D(weights, kernel)
 
     # avoid divide by 0
-    blurWeights = np.where(blurWeights == 0, -2, blurWeights)
+    blurWeights[blurWeights == 0] = -2
     # divide
     normalBlurData = blurData / blurWeights
     # put 0s where it's undefined
-    normalBlurData = np.where(blurWeights < -1, 0, normalBlurData)
+    normalBlurData[blurWeights < -1] = 0
 
     # upsample without rounding
     dX = xx / sampleS + paddingXY
     dY = yy / sampleS + paddingXY
     dZ = (image - edgeMin) / sampleR + paddingZ
 
-    output = interp3d(normalBlurData, (dX, dY, dZ))
-    return np.interp(output, (output.min(), output.max()), (image.min(), image.max()))
+    return interp3D(normalBlurData, (dX, dY, dZ))
 ```
 
 ```python
