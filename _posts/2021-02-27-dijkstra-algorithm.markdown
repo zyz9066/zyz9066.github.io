@@ -207,7 +207,7 @@ template<typename T>
 string digraph<T>::getPath(const int& destNumber) const {
     MapDef<int>::vmap::const_iterator itr = vertexMap.find(destNumber);
     if (itr == vertexMap.end())
-        throw digraphException("Destination vertex not found");
+        throw digraphException("Destination vertex not found!");
 
     string str;
     const Vertex<T>& w = *(*itr).second;
@@ -239,4 +239,55 @@ struct Path {
     bool operator> (const Path& rhs) const { return cost > rhs.cost; }
     bool operator< (const Path& rhs) const { return cost < rhs.cost; }
 };
+```
+
+### Dijkstra's SSAD algorithm
+The *SSAD* function performs shortest path calculation using Dijkstra's algorithm. We use a method that works with the STL priority queue. This method involves inserting an *Path* object in the priority queue whenever we lower the distance. To select a new vertex *v* for visitation, we repeatedly remove the minimum item based on distance from the priority queue until an unvisited vertex emerges.
+
+```cpp
+template<typename T>
+void SSAD(digraph<T>& g, const int& startNumber) {
+    priority_queue<Path<T>, vector<Path<T>>, greater<Path<T>>> pq;
+    Path<T> vrec;  // Stores the result of a deleteMin
+
+    MapDef<int>::vmap::iterator itr = g.vertexMap.find(startNumber);
+    if (itr == g.vertexMap.end()) {
+        stringstream ss;
+        ss << startNumber;
+        throw digraphException(ss.str() + " is not a valid vertex!");
+    }
+
+    g.clearAll();
+    Vertex<T>* start = (*itr).second;
+    start->dist = 0;
+    pq.push(Path<T>(start, 0));
+
+    int nodesSeen = 0;
+    for(; nodesSeen < g.vertexMap.size(); ++nodesSeen)
+    {
+        do { // Find an unvisited vertex
+            if(pq.empty()) return;
+            vrec = pq.top(); pq.pop();
+        } while(vrec.dest->known);
+
+        Vertex<T>* v = vrec.dest;
+        v->known = true;
+
+        for(int i = 0; i < v->adj.size(); ++i) {
+            Edge<T> e = v->adj[i];
+            Vertex<T>* w = e.dest;
+            int cvw = e.cost;
+
+            if (cvw < 0)
+                throw digraphException("Negative edge seen!");
+
+            // Update w
+            if (w->dist > v->dist + cvw) {
+                w->dist = v->dist + cvw;
+                w->prev = v;
+                pq.push(Path<T>(w, w->dist));
+            }
+        }
+    }
+}
 ```
