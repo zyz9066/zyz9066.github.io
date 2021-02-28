@@ -189,7 +189,7 @@ void digraph<T>::clearAll() {
         (*itr).second->reset();
 }
 ```
-- *getPath*: This routine returns the shortest path after the computation has been performed. We can see the *prev* member to trace back the path, it can give the path in order using recursion. The routine performs checking if a path actually exists and then returns *inf* if the path does not exist. Otherwise, it calls the recursive routine and returns the cost of the path.
+- *getPath*: This routine returns the shortest path after the computation has been performed. The *prev* member to trace back the path can be seen, it can give the path in order using recursion. The routine performs checking if a path actually exists and then returns *inf* if the path does not exist. Otherwise, it calls the recursive routine and returns the cost of the path.
 
 ```cpp
 template<typename T>
@@ -242,7 +242,7 @@ struct Path {
 ```
 
 ### Dijkstra's SSAD algorithm
-The *SSAD* function performs shortest path calculation using Dijkstra's algorithm. We use a method that works with the STL priority queue. This method involves inserting an *Path* object in the priority queue whenever we lower the distance. To select a new vertex *v* for visitation, we repeatedly remove the minimum item based on distance from the priority queue until an unvisited vertex emerges.
+The *SSAD* function performs shortest path calculation using Dijkstra's algorithm. A method that works with the STL priority queue is used. This method involves inserting an *Path* object in the priority queue whenever we lower the distance. To select a new vertex *v* for visitation, we repeatedly remove the minimum item based on distance from the priority queue until an unvisited vertex emerges.
 
 ```cpp
 template<typename T>
@@ -291,3 +291,11 @@ void SSAD(digraph<T>& g, const int& startNumber) {
     }
 }
 ```
+
+### main
+In *main* function, a simple program that reads a graph in adjacency matrix form from an input file named "*File.txt*", reads in the number of vertices and a start vertex, then runs Dijkstra's SSAD algorithm. To construct the *digraph* object, we repeatedly read one line of input, assign the line to an `istringstream` object, parse the line, and call *addEdge*. Using an *istringstream* allows us to verify that every line has at least the $$\mid V\mid$$ pieces corresponding to an vertex.
+
+Once the graph has been read, we call *SSAD* to apply Dijkstra's algorithm for a starting vertex. This algorithm throws a *digraphException* if there is any error during execution. It catches any *digraphException* that might be generated and prints an appropriate error message.
+
+## How to run
+Name the input file as "*File.txt*", then run this program, it will generate text file "*Result.txt*" which contains desired output.
