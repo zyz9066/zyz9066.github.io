@@ -75,35 +75,40 @@ In this [program](https://github.com/zyz9066/Algorithms/blob/master/Graph%20Algo
 The second major data structure is the *Vertex* object that stores information about all the vertices.
 
 ### Vertex
-A **
+A *Vertex* object maintains four pieces of information for each vertex.
+- *number*: The corresponding to this vertex is established when the vertex is placed in `map` and never changes.
+- *adj*: The `vector` of adjacent vertices is established when the graph is read.
+- *dist*: The length of the shortest path from the starting vertex to this vertex is computed by Dijkstra's algorithm.
+- *prev*: The previous vertex on the shortest path to this vertex.
+- *known*: This variable is used to record whether this vertex has been visited or not during implementing Dijkstra's algorithm.
+- *reset*: This function is used to initialize the data members that are computed by the Dijkstra's algorithm.
+
 ```cpp
 template<typename T>
-struct Vertex;
+struct Vertex
+{
+    int number;            // Vertex number
+    vector<Edge<T>> adj;   // Adjacent list
+    T dist;                // Distance
+    Vertex *prev;          // Previous vertex on shortest path
+    bool known;            // Flag used in Dijkstra's algorithm
 
-// Basic item stored in adjacency list.
+    Vertex(const int & num) : number(num) { reset(); }
+
+    void reset() { dist = 0x7fffffff; prev = NULL; known = false; }
+};
+```
+
+### Edge
+The *Edge* consists of a pointer to a *Vertex* and the edge cost.
+
+```cpp
 template<typename T>
 struct Edge
 {
     Vertex<T> *dest;   // incident vertex in edge
-    T cost;    // Edge cost
+    T cost;            // Edge cost
 
-    Edge( Vertex<T> *d = 0, T c = 0 )
-        : dest( d ), cost( c ) { }
-};
-
-template<typename T>
-struct Vertex
-{
-    int number;    // Vertex number
-    vector<Edge<T>> adj;   // Adjacent list
-    T dist;    // Distance
-    Vertex *prev;   // Previous vertex on shortest path
-    bool known;    // Flag used in Dijkstra's algorithm
-
-    Vertex( const int & num ) : number( num )
-        { reset( ); }
-
-    void reset( )
-        { dist = 9999; prev = NULL; known = false; }
+    Edge(Vertex<T> *d = 0, T c = 0) : dest(d), cost(c) {}
 };
 ```
