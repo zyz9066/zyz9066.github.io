@@ -1,6 +1,6 @@
 ---
 layout: post
-title:  "Array (C++)"
+title:  "Array Class in C++"
 date:   2021-02-28 11:11:03 -0400
 categories: data structures
 ---
@@ -167,5 +167,50 @@ int main(int argc, char** argv) {
     } catch (ArrayException& e) {
         cout << "Array error: " << e.what() << endl;
     }
+}
+```
+
+## Objective 2
+Write an algorithm and a C++ program that ask the user to type 10 integers of an array and an integer value $$v$$. The program will search if the value $$v$$ exists in the array and must remove the first occurence of $$v$$, shifting each following element left and adding a zero at the end of the array. The program must then write the final array.
+
+```cpp
+int main(int argc, char** argv) {
+    try {
+        Array<int> A(10);
+
+        // Ask for user input
+        int number, val, pos;
+        cout << "Please enter 10 integers" << endl;
+        for (int i = 0; i < 10; i++) {
+	        	cout << "Integer " << i+1 << ": ";
+	        	cin >> number;
+	        	A.push_back(number);
+        }
+
+        // Ask for number to delete
+        cout << "Please enter a integer to delete: ";
+        cin >> val;
+
+        // Check and remove number
+				pos = A.linearSearch(val);
+        if (pos != -1) {
+	        	A.remove(val);
+	        	cout << "Value is found and first occurence is deleted." << endl;
+				} else {
+						cout << "Value not found." << endl;
+				}
+
+        // Display array
+        cout << "Display array after deletion: " << endl;
+        A.display();
+
+        cin.get();
+        cin.get();
+
+    } catch (ArrayException& e) {
+        cout << "Array error: " << e.what() << endl;
+    }
+
+    return 0;
 }
 ```

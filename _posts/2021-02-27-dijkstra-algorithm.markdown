@@ -1,6 +1,6 @@
 ---
 layout: post
-title:  "Dijkstra's Algorithm on Digraph (C++)"
+title:  "Dijkstra's Algorithm on Digraph in C++"
 date:   2021-02-27 11:11:03 -0400
 categories: graph algorithms
 ---
