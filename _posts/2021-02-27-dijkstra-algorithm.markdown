@@ -124,22 +124,22 @@ In the *digraph* class interface, *vertexMap* stores the `map`. The rest of the 
 ```cpp
 template<typename T>
 class digraph {
-    public:
-        digraph() {}
-        ~digraph();
+public:
+    digraph() {}
+    ~digraph();
 
-        MapDef<int>::vmap vertexMap;
+    MapDef<int>::vmap vertexMap;
 
-        Vertex<T>* getVertex(const int& vertexNumber);
-        void addEdge(const int& sourceNumber, const int& destNumber, int cost);
-        string getPath(const int& destNumber) const;
-        void clearAll();
+    Vertex<T>* getVertex(const int& vertexNumber);
+    void addEdge(const int& sourceNumber, const int& destNumber, int cost);
+    string getPath(const int& destNumber) const;
+    void clearAll();
 
-    private:
-        string getPath(const Vertex<T>& dest) const;
+private:
+    string getPath(const Vertex<T>& dest) const;
 
-        digraph(const digraph& rhs) {}
-        const digraph& operator= (const digraph& rhs) { return *this; }
+    digraph(const digraph& rhs) {}
+    const digraph& operator= (const digraph& rhs) { return *this; }
 };
 ```
 
@@ -295,7 +295,106 @@ void SSAD(digraph<T>& g, const int& startNumber) {
 ### main
 In *main* function, a simple program that reads a graph in adjacency matrix form from an input file named "*File.txt*", reads in the number of vertices and a start vertex, then runs Dijkstra's SSAD algorithm. To construct the *digraph* object, we repeatedly read one line of input, assign the line to an `istringstream` object, parse the line, and call *addEdge*. Using an *istringstream* allows us to verify that every line has at least the $$\mid V\mid$$ pieces corresponding to an vertex.
 
+```cpp
+int main(int argc, char *argv[]) {   
+    ifstream inFile ("File.txt");
+    if (!inFile) {
+        cerr << "Cannot open File.txt!" << endl;
+        return 1;
+    }
+
+    cout << "Reading file..." << endl;
+    string oneLine;
+
+    // Read in number of vertices
+    getline(inFile, oneLine);
+    oneLine.erase(remove(oneLine.begin(), oneLine.end(), ' '), oneLine.end());
+    istringstream iss(oneLine.substr(oneLine.find( ":" ) + 1));
+    int qty;
+    iss >> qty;
+
+    // Read in start vertex
+    getline(inFile, oneLine);
+    oneLine.erase(remove(oneLine.begin(), oneLine.end(), ' '), oneLine.end());
+    istringstream issStart(oneLine.substr(oneLine.find( ":" ) + 1));
+    int startVertex;
+    issStart >> startVertex;
+
+    // Read in blankline
+    getline(inFile, oneLine);
+
+    // Read the edges; add them to g
+    digraph<int> g;
+    int source = 0, dest, cost[qty];
+    while (getline(inFile, oneLine)) {
+        istringstream st(oneLine);
+
+        for (dest = 0; dest < qty; ++dest)
+            st >> cost[dest];
+
+        if(st.fail()) continue;
+        else
+            for (dest = 0; dest < qty; ++dest) {
+                if(cost[dest] > 0)
+                    g.addEdge(source, dest, cost[dest]);
+            }
+        ++source;      
+    }
+    cout << "File read, digraph constructed" << endl;
+
+    cout << "Writing in adjacency list" << endl;
+    ofstream outFile;
+
+    outFile.open("Result.txt", ios::trunc);
+    outFile << "Node|\tOut-neighbours" << endl;
+    outFile << "-----------------------------------" << endl;
+    for (int i = 0; i < qty; ++i) {   
+        outFile << i << "\t\t";
+        Vertex<int>* u = g.getVertex(i);
+        for (int j = 0; j < u->adj.size(); ++j) {
+            Edge<int> e = u->adj[j];
+            Vertex<int>* v = e.dest;
+            int cuv = e.cost;
+            outFile << v->number << ": " << cuv << "\t";
+        }
+        outFile << endl;
+    }
+
+    cout << "Implementing Dijkstra's SSAD algorithm" << endl;
+    outFile << endl << endl << "Start vertex is: " << startVertex << endl << endl;
+    outFile << "Dest|\tWeight|\tPath" << endl;
+    outFile << "-----------------------------------" << endl;
+    try {
+        SSAD(g, startVertex);
+        string str;
+        for (dest = 0; dest < qty; ++dest) {
+            str = g.getPath(dest);
+            outFile << str;
+        }
+    } catch(const digraphException& e) {
+        cerr << e.toString() << endl;
+    }
+    outFile.close();
+    cout << "Result file saved";
+
+    return 0;
+}
+```
+
 Once the graph has been read, we call *SSAD* to apply Dijkstra's algorithm for a starting vertex. This algorithm throws a *digraphException* if there is any error during execution. It catches any *digraphException* that might be generated and prints an appropriate error message.
 
+```cpp
+class digraphException {
+public:
+    digraphException(const string& msg = "") : message(msg) { }
+    virtual ~digraphException() {}
+    virtual string toString() const { return "Exception " + string(": ") + what(); }
+
+    virtual string what() const { return message; }
+
+private:
+    string message;
+};
+```
 ## How to run
 Name the input file as "*File.txt*", then run this program, it will generate text file "*Result.txt*" which contains desired output.
