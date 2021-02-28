@@ -24,11 +24,11 @@ Start vertex:       4
 0    0    0    0    0    0   55    0    0    0    0
 ```
 
-Output will be written to a file named for instance "Result.txt". The output file should consist of two sections, one displaying information about the given graph and the other displaying the results of running the Dijkstra's shortest paths SSAD algorithm.
+Output will be written to a file named for instance "*Result.txt*". The output file should consist of two sections, one displaying information about the given graph and the other displaying the results of running the Dijkstra's shortest paths SSAD algorithm.
 
-The graph information display consists of a row of labels (see example), followed by $$|V|$$ rows of output displaying the graph information in a format similar to the adjacency-list representation of the graph. For each vertex, there will be one row of data listing the vertex number, followed by list of neighbor records. A neighbor record consists of a neighbor (vertex) number, followed by a colon character, followed by the weight of the corresponding edge. The graph information display is followed by a blank line.
+The graph information display consists of a row of labels (see example), followed by $$\mid V\mid$$ rows of output displaying the graph information in a format similar to the adjacency-list representation of the graph. For each vertex, there will be one row of data listing the vertex number, followed by list of neighbor records. A neighbor record consists of a neighbor (vertex) number, followed by a colon character, followed by the weight of the corresponding edge. The graph information display is followed by a blank line.
 
-The SSAD results display begins with two lines of labels (see example), one showing the source vertex and a blank line, followed by $$|V|$$ rows showing the results for each possible destination vertex (including the source vertex itself). Each of these lines consists of three sections, the destination vertex number, the length (total weight) of the shortest path found, and the actual path (a sequence of vertex numbers separated by spaces). If a vertex is not reachable from the source vertex, "`inf`" should be displayed instead of the length.
+The SSAD results display begins with two lines of labels (see example), one showing the source vertex and a blank line, followed by $$\mid V\mid$$ rows showing the results for each possible destination vertex (including the source vertex itself). Each of these lines consists of three sections, the destination vertex number, the length (total weight) of the shortest path found, and the actual path (a sequence of vertex numbers separated by spaces). If a vertex is not reachable from the source vertex, "`inf`" should be displayed instead of the length.
 
 Here's an output example that corresponds to the input example above:
 
@@ -74,6 +74,8 @@ In this [program](https://github.com/zyz9066/Algorithms/blob/master/Graph%20Algo
 
 The second major data structure is the *Vertex* object that stores information about all the vertices.
 
+### Vertex
+A **
 ```cpp
 template<typename T>
 struct Vertex;
