@@ -2,7 +2,7 @@
 layout: post
 title:  "Image Registration"
 date:   2020-09-12 11:11:03 -0400
-categories: medical imaging
+categories: computer vision
 ---
 ## Joint histogram
 A *python* function `JointHist(I, J, bin)` which calculates the joint histogram of two images of the same size. For images of size $$n\times p$$, verify $$\sum_{i,j}H_{I,J}(i,j) = n\times p$$. Calculate and show the joint histogram of different pairs of images given [here](https://github.com/zyz9066/Image-Analysis/tree/master/Image%20Registration/assignment_2_data) (I1, J1, I2, J2, etc.). Use the logarithmic scale to visualize joint hist:

@@ -1,6 +1,6 @@
 ---
 layout: post
-title:  "Computer Graphics"
+title:  "Transformation in Computer Graphics"
 date:   2021-01-03 11:11:03 -0400
 categories: computer graphics
 ---

@@ -1,6 +1,6 @@
 ---
 layout: post
-title:  "Image Denoising & Segmentation"
+title:  "Image Denoising & Segmentation (TBD)"
 date:   2021-01-03 11:11:03 -0400
 categories: computer vision
 ---
@@ -45,16 +45,16 @@ Implement denoising techniques, apply them to the image. Show the noisy, denoise
 def bilateralFilter(image, sigmaS=int(20/2.87), sigmaR=23, sampleS=None, sampleR=None):
 
     def fftconvolve3D(image, kernel):
-        def fft(array, shape):
-            fft = np.fft.fftn(array, s=shape)
+        def rfft(array, shape):
+            fft = np.fft.rfftn(array, s=shape)
             return fft
 
-        def ifft(array):
-            ifft = np.fft.ifftn(array)
+        def irfft(array):
+            ifft = np.fft.irfftn(array)
             return ifft
 
         def conv3D(array, kernel, shape):
-            conv = np.abs(ifft(fft(array, shape)*fft(kernel, shape)))
+            conv = irfft(rfft(array, shape)*rfft(kernel, shape))
             return conv
 
         # fft method

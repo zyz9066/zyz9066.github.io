@@ -1,6 +1,6 @@
 ---
 layout: post
-title:  "Data Mining"
+title:  "Data Mining Basics"
 date:   2020-09-01 11:11:03 -0400
 categories: data mining
 ---

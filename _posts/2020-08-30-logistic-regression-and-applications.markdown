@@ -1,6 +1,6 @@
 ---
 layout: post
-title:  "Logistic Regression and Application"
+title:  "Logistic Regression and Application (R)"
 date:   2020-08-30 16:11:03 -0400
 categories: statistical learning
 ---
