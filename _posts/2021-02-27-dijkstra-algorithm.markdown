@@ -72,6 +72,14 @@ Dest | Total Weight | Path
 ## Code Explanation
 In this [program](https://github.com/zyz9066/Algorithms/blob/master/Graph%20Algorithm/main.cpp), the first major data structure is a `map` named *vertexMap* that allows us to find, for any vertex, a pointer to the *Vertex* object represents it.
 
+```cpp
+template<typename T>
+struct MapDef
+{
+    typedef map<int, Vertex<T>*, less<int>> vmap;
+};
+```
+
 The second major data structure is the *Vertex* object that stores information about all the vertices.
 
 ### Vertex
@@ -90,10 +98,10 @@ struct Vertex
     int number;            // Vertex number
     vector<Edge<T>> adj;   // Adjacent list
     T dist;                // Distance
-    Vertex *prev;          // Previous vertex on shortest path
+    Vertex* prev;          // Previous vertex on shortest path
     bool known;            // Flag used in Dijkstra's algorithm
 
-    Vertex(const int & num) : number(num) { reset(); }
+    Vertex(const int& num) : number(num) { reset(); }
 
     void reset() { dist = 0x7fffffff; prev = NULL; known = false; }
 };
@@ -106,19 +114,126 @@ The *Edge* consists of a pointer to a *Vertex* and the edge cost.
 template<typename T>
 struct Edge
 {
-    Vertex<T> *dest;   // incident vertex in edge
+    Vertex<T>* dest;   // incident vertex in edge
     T cost;            // Edge cost
 
-    Edge(Vertex<T> *d = 0, T c = 0) : dest(d), cost(c) {}
+    Edge(Vertex<T>* d = 0, T c = 0) : dest(d), cost(c) {}
 };
 ```
 
 ### digraph
 In the *digraph* class interface, *vertexMap* stores the `map`. The rest of the class provides member functions that perform initialization, add vertices and edges, save the shortest path.
+
+```cpp
+template<typename T>
+class digraph
+{
+    public:
+        digraph() {}
+        ~digraph();
+
+        MapDef<int>::vmap vertexMap;
+
+        Vertex<T>* getVertex(const int& vertexNumber);
+        void addEdge(const int& sourceNumber, const int& destNumber, int cost);
+        string getPath(const int& destNumber) const;
+        void clearAll();
+
+    private:
+        string getPath(const Vertex<T>& dest) const;
+
+        digraph(const digraph& rhs) {}
+        const digraph& operator= (const digraph& rhs) { return *this; }
+};
+```
+
 - Constructor: The default creates an empty `map`.
 - Destructor: It destroys all the dynamically allocated *Vertex* object.
+
+```cpp
+template<typename T>
+digraph<T>::~digraph( )
+{
+    for (MapDef<int>::vmap::iterator itr = vertexMap.begin(); itr != vertexMap.end(); ++itr)
+        delete (*itr).second;
+}
+```
+
 - *getVertex*: This method consults the map to get the *Vertex* entry. If the *Vertex* does not exist, we create a new *Vertex* and update the `map`.
+
+```cpp
+template<typename T>
+Vertex<T>* digraph<T>::getVertex(const int& vertexNumber)
+{
+    MapDef<int>::vmap::iterator itr = vertexMap.find(vertexNumber);
+
+    if (itr == vertexMap.end())
+    {
+        Vertex<T>* newv = new Vertex<T>(vertexNumber);
+        vertexMap[vertexNumber] = newv;
+        return newv;
+    }
+    return (*itr).second;
+}
+```
+
 - *addEdge*: This function gets the corresponding *Vertex* entries and then update the adjacency `vector`.
+
+```cpp
+template<typename T>
+void digraph<T>::addEdge(const int& sourceNumber, const int& destNumber, int cost)
+{
+    Vertex<T>* v = getVertex(sourceNumber);
+    Vertex<T>* w = getVertex(destNumber);
+    v->adj.push_back(Edge<T>(w, cost));
+}
+```
 - *clearAll*: Initialize the members for the shortest path computation using Dijkstra's algorithm.
-- *getPath*: This routine returns the shortest path after the computation has been performed. We can see the
-- *prev* member to trace back the path, it can give the path in order using recursion. The routine performs checking if a path actually exists and then returns *inf* if the path does not exist. Otherwise, it calls the recursive routine and returns the cost of the path.
+
+```cpp
+template<typename T>
+void digraph<T>::clearAll()
+{
+    for (MapDef<int>::vmap::iterator itr = vertexMap.begin(); itr != vertexMap.end(); ++itr)
+        (*itr).second->reset();
+}
+```
+- *getPath*: This routine returns the shortest path after the computation has been performed. We can see the *prev* member to trace back the path, it can give the path in order using recursion. The routine performs checking if a path actually exists and then returns *inf* if the path does not exist. Otherwise, it calls the recursive routine and returns the cost of the path.
+
+```cpp
+template<typename T>
+string digraph<T>::getPath(const Vertex<T>& dest) const
+{   
+    string str;
+    if (dest.prev != NULL){
+
+        str = getPath(*dest.prev) + "  ";
+    }
+    stringstream ss;
+    ss << dest.number;
+    return str += ss.str();
+}
+
+template<typename T>
+string digraph<T>::getPath(const int & destNumber) const
+{
+    MapDef<int>::vmap::const_iterator itr = vertexMap.find(destNumber);
+    if (itr == vertexMap.end())
+        throw digraphException("Destination vertex not found");
+
+    string str;
+    const Vertex<T>& w = *(*itr).second;
+    if (w.dist == 0x7fffffff)
+    {
+        stringstream ss;
+        ss << destNumber;
+        str = ss.str() + "\t\tinf";
+    } else {   
+        stringstream ss, ssw;
+        ss << destNumber;
+        ssw << w.dist;
+        str = ss.str() + "\t\t" + ssw.str() + "\t\t" + getPath(w);
+    }
+    return str += "\n";
+}
+```
