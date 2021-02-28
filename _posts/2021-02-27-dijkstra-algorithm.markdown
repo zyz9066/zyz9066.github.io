@@ -112,3 +112,13 @@ struct Edge
     Edge(Vertex<T> *d = 0, T c = 0) : dest(d), cost(c) {}
 };
 ```
+
+### digraph
+In the *digraph* class interface, *vertexMap* stores the `map`. The rest of the class provides member functions that perform initialization, add vertices and edges, save the shortest path.
+- Constructor: The default creates an empty `map`.
+- Destructor: It destroys all the dynamically allocated *Vertex* object.
+- *getVertex*: This method consults the map to get the *Vertex* entry. If the *Vertex* does not exist, we create a new *Vertex* and update the `map`.
+- *addEdge*: This function gets the corresponding *Vertex* entries and then update the adjacency `vector`.
+- *clearAll*: Initialize the members for the shortest path computation using Dijkstra's algorithm.
+- *getPath*: This routine returns the shortest path after the computation has been performed. We can see the
+- *prev* member to trace back the path, it can give the path in order using recursion. The routine performs checking if a path actually exists and then returns *inf* if the path does not exist. Otherwise, it calls the recursive routine and returns the cost of the path.
