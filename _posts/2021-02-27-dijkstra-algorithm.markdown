@@ -33,34 +33,36 @@ The SSAD results display begins with two lines of labels (see example), one show
 Here's an output example that corresponds to the input example above:
 
 ```sh
-Node  | Out-neighbors
-----------------------------------------------------------------------
-0       3: 10  5: 94  8: 73
-1       3: 13  8: 2
-2       5: 43
-3      
-4       3: 87  9: 68   
-5           
-6       1: 97   
-7       5: 91   
-8          
-9       1: 17
-10      6: 55
+Node|	Out-neighbours
+-----------------------------------
+0		3: 10	5: 94	8: 73
+1		3: 13	8: 2
+2		5: 43
+3		
+4		3: 87	9: 68
+5		
+6		1: 97
+7		5: 91
+8		
+9		1: 17
+10		6: 55
+
 
 Start vertex is: 4
-Dest | Total Weight | Path
-----------------------------------------------------------------------
-0            inf        
-1             85       9   1
-2            inf          
-3             87         
-4             0        3   
-5            inf   
-6            inf         
-7            inf          
-8             87       9   1   8
-9             68       9   
-10           inf  
+
+Dest|	Weight|	Path
+-----------------------------------
+0		inf
+1		85		4  9  1
+2		inf
+3		87		4  3
+4		0		4
+5		inf
+6		inf
+7		inf
+8		87		4  9  1  8
+9		68		4  9
+10		inf  
 ```
 
 ### Notes
@@ -375,7 +377,7 @@ int main(int argc, char *argv[]) {
         cerr << e.toString() << endl;
     }
     outFile.close();
-    cout << "Result file saved";
+    cout << "Result file saved" << endl;
 
     return 0;
 }
