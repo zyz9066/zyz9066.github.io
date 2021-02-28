@@ -295,7 +295,7 @@ void SSAD(digraph<T>& g, const int& startNumber) {
 ```
 
 ### main
-In *main* function, a simple program that reads a graph in adjacency matrix form from an input file named "*File.txt*", reads in the number of vertices and a start vertex, then runs Dijkstra's SSAD algorithm. To construct the *digraph* object, we repeatedly read one line of input, assign the line to an `istringstream` object, parse the line, and call *addEdge*. Using an *istringstream* allows us to verify that every line has at least the $$\mid V\mid$$ pieces corresponding to an vertex.
+In *main* function, a simple [program]](https://github.com/zyz9066/Algorithms/blob/master/Graph%20Algorithm/main.cpp) that reads a graph in adjacency matrix form from an input file named "*File.txt*", reads in the number of vertices and a start vertex, then runs Dijkstra's SSAD algorithm. To construct the *digraph* object, we repeatedly read one line of input, assign the line to an `istringstream` object, parse the line, and call *addEdge*. Using an *istringstream* allows us to verify that every line has at least the $$\mid V\mid$$ pieces corresponding to an vertex.
 
 ```cpp
 int main(int argc, char *argv[]) {   
