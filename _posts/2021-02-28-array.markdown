@@ -1,0 +1,122 @@
+---
+layout: post
+title:  "Array (C++)"
+date:   2021-02-28 11:11:03 -0400
+categories: data structures
+---
+```cpp
+// Swapping by three copies
+template <typename T>
+void swap(T& x, T& y) {
+	 T tmp = x; x = y; y = tmp;
+}
+
+// simple exception class
+class ArrayException : public exception {
+	  const char* msg;
+    ArrayException(){}; // no default constructor
+public:
+	  explicit ArrayException(const char* s) throw() : msg(s) {}
+    const char* what() const throw() { return msg; }
+};
+
+// simple fixed-size array template
+template <typename T>
+class Array {
+private:
+	  static const int SPARE_CAPACITY = 16;
+    static const int maxSize = 1000;
+    int _size;
+    int _capacity;
+    T* _arrayPtr;
+
+public:
+	  // Constructor
+    explicit Array (int initSize = 0) : _size{initSize}, _capacity{initSize + SPARE_CAPCITY}
+		{ _arrayPtr = new T[_capacity]; }
+
+    Array(const Array& rhs) : _size{rhs.size()}, _capacity{rhs.capacity()}, _arrayPtr{nullptr}
+    {
+    		_arrayPtr = new T[_capacity];
+    		for (int k = 0; k < _size; ++k) _arrayPtr[k] = rhs.get(k);
+	  }
+
+    Array& operator= (const Array& rhs) {
+		    Array copy = rhs;
+		    swap(*this, copy);
+		    return *this;
+    }
+
+    ~Array() { delete[] _arrayPtr; }
+
+    Array(Array&& rhs) : _size{rhs.size()}, _capacity{rhs.capacity()}, _arrayPtr{rhs._arrayPtr}
+    {
+      	rhs._arrayPtr = nullptr;
+      	rhs._size = 0;
+      	rhs._capacity = 0;
+	  }
+
+  	Array& operator= (Array&& rhs) {
+    		swap(_size, rhs._size);
+    		swap(_capacity, rhs._capacity);
+    		swap(_arrayPtr, rhs._arrayPtr);
+
+    		return *this;
+  	}
+
+  	void resize(in newSize) {
+    		if (newSize > _capacity) reserve(newSize*2);
+    		_size = newSize;
+  	}
+
+  	void reserve(int newCapacity) {
+    		if (newCapacity < _size) return;
+    		T* newArray = new T[newCapacity];
+    		for (int k = 0; k < _size; ++k) newArray[k] = _arrayPtr[k];
+
+    		_capacity = newCapacity;
+    		swap(_arrayPtr, newArray);
+    		delete[] newArray;
+  	}
+
+  	T& operator[](int index) { return _arrayPtr[index]; }
+  	const T& operator[](int index) const { return _arrayPtr[index]; }
+
+	  bool empty() const { return size() == 0; }
+    int size() const { return _size; }
+	  int capacity() const { return _capacity; }
+
+    T & get(const int);
+    void push_back(const T& x) {
+      	if (_size == _capacity) reserve(2*_capacity+1);
+      	arrayPtr[_size++] = x;
+  	}
+
+  	void pop_back() { --_size; }
+
+	  const T& back() const { return arrayPtr[_size-1]; }
+
+  	typedef T* iterator;
+  	typedef const T* const_iterator;
+
+  	iterator begin() { return &_arrayPtr[0]; }
+  	const_iterator begin() const { return &_arrayPtr[0]; }
+  	iterator end() { return &_arrayPtr[size()]; }
+  	const_iterator end() const { return &_arrayPtr[size()]; }
+
+    void insertByOrder(const T);
+    void update(const int, const T);
+    void remove(const T);
+    void display();
+    int linearSearch(const T);
+    void selectionSort();
+    //void quickSort( const int, const int );
+    int binarySearch(const T, const int, const int);
+    int findMin();
+    int findMax();
+    int countBetween(const T, const T);
+    T findMost();
+};
+```
+## Objective 1
+Write an algorithm and a C++ program that creates an array which can hold 100 integers, and initialize it where each element of the array is equal to $$2*i+1$$, where $$i$$ is the index of the element. Display those values on the screen. Search through the array, and count the number of elements which are between 15 and 65.
