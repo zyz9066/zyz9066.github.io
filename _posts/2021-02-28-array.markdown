@@ -110,7 +110,6 @@ public:
     void display();
     int linearSearch(const T);
     void selectionSort();
-    //void quickSort( const int, const int );
     int binarySearch(const T, const int, const int);
     int findMin();
     int findMax();
@@ -120,3 +119,53 @@ public:
 ```
 ## Objective 1
 Write an algorithm and a C++ program that creates an array which can hold 100 integers, and initialize it where each element of the array is equal to $$2*i+1$$, where $$i$$ is the index of the element. Display those values on the screen. Search through the array, and count the number of elements which are between 15 and 65.
+```cpp
+template <typename T>
+void Array<T>::display() {
+    if (empty()) throw ArrayException("Array is empty!");
+    T* ptr = _arrayPtr;
+   	do {
+        cout << *ptr << endl;
+    } while (ptr++ != _arrayPtr+size());
+}
+
+template <typename T>
+int Array<T>::countBetween(const T a, const T b) {
+    if (empty()) throw ArrayException("Array is empty!");
+    T maxValue = a > b ? a : b, minValue = a < b ? a : b;
+    T* ptr = _arrayPtr;
+    int counter = 0;
+    do {
+        if (*ptr >= minValue && *ptr <= maxValue) {
+            counter++;
+        }
+    } while (ptr++ != _arrayPtr+size());
+    return counter;
+}
+```
+
+```cpp
+int main(int argc, char** argv) {
+    try {
+        Array<int> A(100);
+
+        // Initialize array
+        for (int i = 0; i < 100; i++) {
+            A.push_back(2*i+1);
+        }
+
+        // Display array
+        cout << "Display values in array: " << endl;
+        A.display();
+
+        // Count number between 15 and 65
+        int a = 15, b = 65;
+        cout << "The number of elements between 15 and 65 is " << A.countBetween(a, b) << endl;
+
+        cin.get();
+
+    } catch (ArrayException& e) {
+        cout << "Array error: " << e.what() << endl;
+    }
+}
+```
