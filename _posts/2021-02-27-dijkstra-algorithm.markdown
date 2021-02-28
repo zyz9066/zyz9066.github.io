@@ -74,8 +74,7 @@ In this [program](https://github.com/zyz9066/Algorithms/blob/master/Graph%20Algo
 
 ```cpp
 template<typename T>
-struct MapDef
-{
+struct MapDef {
     typedef map<int, Vertex<T>*, less<int>> vmap;
 };
 ```
@@ -93,8 +92,7 @@ A *Vertex* object maintains four pieces of information for each vertex.
 
 ```cpp
 template<typename T>
-struct Vertex
-{
+struct Vertex {
     int number;            // Vertex number
     vector<Edge<T>> adj;   // Adjacent list
     T dist;                // Distance
@@ -112,8 +110,7 @@ The *Edge* consists of a pointer to a *Vertex* and the edge cost.
 
 ```cpp
 template<typename T>
-struct Edge
-{
+struct Edge {
     Vertex<T>* dest;   // incident vertex in edge
     T cost;            // Edge cost
 
@@ -126,8 +123,7 @@ In the *digraph* class interface, *vertexMap* stores the `map`. The rest of the 
 
 ```cpp
 template<typename T>
-class digraph
-{
+class digraph {
     public:
         digraph() {}
         ~digraph();
@@ -152,8 +148,7 @@ class digraph
 
 ```cpp
 template<typename T>
-digraph<T>::~digraph( )
-{
+digraph<T>::~digraph( ) {
     for (MapDef<int>::vmap::iterator itr = vertexMap.begin(); itr != vertexMap.end(); ++itr)
         delete (*itr).second;
 }
@@ -163,12 +158,10 @@ digraph<T>::~digraph( )
 
 ```cpp
 template<typename T>
-Vertex<T>* digraph<T>::getVertex(const int& vertexNumber)
-{
+Vertex<T>* digraph<T>::getVertex(const int& vertexNumber) {
     MapDef<int>::vmap::iterator itr = vertexMap.find(vertexNumber);
 
-    if (itr == vertexMap.end())
-    {
+    if (itr == vertexMap.end()) {
         Vertex<T>* newv = new Vertex<T>(vertexNumber);
         vertexMap[vertexNumber] = newv;
         return newv;
@@ -181,8 +174,7 @@ Vertex<T>* digraph<T>::getVertex(const int& vertexNumber)
 
 ```cpp
 template<typename T>
-void digraph<T>::addEdge(const int& sourceNumber, const int& destNumber, int cost)
-{
+void digraph<T>::addEdge(const int& sourceNumber, const int& destNumber, int cost) {
     Vertex<T>* v = getVertex(sourceNumber);
     Vertex<T>* w = getVertex(destNumber);
     v->adj.push_back(Edge<T>(w, cost));
@@ -192,8 +184,7 @@ void digraph<T>::addEdge(const int& sourceNumber, const int& destNumber, int cos
 
 ```cpp
 template<typename T>
-void digraph<T>::clearAll()
-{
+void digraph<T>::clearAll() {
     for (MapDef<int>::vmap::iterator itr = vertexMap.begin(); itr != vertexMap.end(); ++itr)
         (*itr).second->reset();
 }
@@ -202,29 +193,25 @@ void digraph<T>::clearAll()
 
 ```cpp
 template<typename T>
-string digraph<T>::getPath(const Vertex<T>& dest) const
-{   
+string digraph<T>::getPath(const Vertex<T>& dest) const {   
     string str;
-    if (dest.prev != NULL){
-
+    if (dest.prev != NULL)
         str = getPath(*dest.prev) + "  ";
-    }
+
     stringstream ss;
     ss << dest.number;
     return str += ss.str();
 }
 
 template<typename T>
-string digraph<T>::getPath(const int & destNumber) const
-{
+string digraph<T>::getPath(const int& destNumber) const {
     MapDef<int>::vmap::const_iterator itr = vertexMap.find(destNumber);
     if (itr == vertexMap.end())
         throw digraphException("Destination vertex not found");
 
     string str;
     const Vertex<T>& w = *(*itr).second;
-    if (w.dist == 0x7fffffff)
-    {
+    if (w.dist == 0x7fffffff) {
         stringstream ss;
         ss << destNumber;
         str = ss.str() + "\t\tinf";
@@ -236,4 +223,20 @@ string digraph<T>::getPath(const int & destNumber) const
     }
     return str += "\n";
 }
+```
+
+### Path
+This object is placed on the priority queue. It consists of the target vertex and its distance and a comparison function defined on the basis of the distance from start vertex.
+
+```cpp
+template<typename T>
+struct Path {
+    Vertex<T>* dest;   // target vertex
+    T cost;            // distance
+
+    Path(Vertex<T> *d = 0, T c = 0) : dest(d), cost(c) {}
+
+    bool operator> (const Path& rhs) const { return cost > rhs.cost; }
+    bool operator< (const Path& rhs) const { return cost < rhs.cost; }
+};
 ```
