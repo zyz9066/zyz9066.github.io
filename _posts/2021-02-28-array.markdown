@@ -326,6 +326,59 @@ int main(int argc, char** argv) {
 ## Objective 4: insert a value into a sorted array
 An array *A* of size $$NMAX$$ contains $$N(<NMAX)$$ integer values sorted in ascending order; the $$(N+1)^{th}$$ value is undefined. Write an algorithm and a program that inserts a given *VAL* value from keyboard in the array *A* to obtain an array of $$N+1$$ sorted values.
 
+```cpp
+template <typename T>
+void Array<T>::insertByOrder(const T val) {
+    if (_size == _capacity) reserve(2*_capacity+1);
+    T* ptr1 = _arrayPtr, *ptr2 = ptr1+end(), *ptr3 = ptr2--;
+		while (*ptr1 < val && ptr1 != ptr3) ptr1++;
+		if (ptr1 == ptr3)
+				push_back(val);
+		else {
+				push_back(*ptr3);
+				while (ptr3 != ptr1) {
+						*ptr3-- = *ptr2--;
+				}
+				*ptr1 = val;
+		}
+}
+```
+
+```cpp
+int main(int argc, char** argv) {
+    try {
+        Array<int> A(15);
+
+        // Initialize random seed
+  			srand(time(NULL));
+
+        // Initialize array with random ascending numbers
+        for (int i = 0; i < 10; i++) {
+        		A.push_back(i*10 + rand()%10);
+        }
+
+        // Display array
+        cout << "Display array: " << endl;
+        A.display();
+
+        // Ask for number to insert
+        int val;
+        cout << "Please enter a interger to insert: ";
+        cin >> val;
+        A.insertByOrder(val);
+
+        // Display array after insertion
+        cout << "Display array after insert " << val << endl;
+        A.display();
+
+        cin.get();
+        cin.get();
+
+    } catch (ArrayException& e) {
+        cout << "Array error: " << e.what() << endl;
+    }
+}
+```
 ## Objective 5: find a value in an array
 Write an algorithm and a program that search in an array of integers a $$VAL$$ value entered from the keyboard by using a serial searching. Display the position of *VAL* if it is in the table, otherwise display a corresponding message. The *POS* value that is used to memorize the position of the value in the array, will have the value -1 as long as *VAL* was not found.
 
