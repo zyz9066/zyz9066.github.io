@@ -118,7 +118,7 @@ public:
 };
 ```
 ## Objective 1
-Write an algorithm and a C++ program that creates an array which can hold 100 integers, and initialize it where each element of the array is equal to $$2*i+1$$, where $$i$$ is the index of the element. Display those values on the screen. Search through the array, and count the number of elements which are between 15 and 65.
+Write an algorithm and a program that creates an array which can hold 100 integers, and initialize it where each element of the array is equal to $$2*i+1$$, where $$i$$ is the index of the element. Display those values on the screen. Search through the array, and count the number of elements which are between 15 and 65.
 ```cpp
 template <typename T>
 void Array<T>::display() {
@@ -171,7 +171,44 @@ int main(int argc, char** argv) {
 ```
 
 ## Objective 2
-Write an algorithm and a C++ program that ask the user to type 10 integers of an array and an integer value $$v$$. The program will search if the value $$v$$ exists in the array and must remove the first occurence of $$v$$, shifting each following element left and adding a zero at the end of the array. The program must then write the final array.
+Write an algorithm and a program that ask the user to type 10 integers of an array and an integer value $$v$$. The program will search if the value $$v$$ exists in the array and must remove the first occurrence of $$v$$, shifting each following element left and adding a zero at the end of the array. The program must then write the final array.
+
+```cpp
+template <typename T>
+int Array<T>::linearSearch(const T val) {
+		if (empty()) throw ArrayException("Array is empty!");
+		T* ptr = _arrayPtr;
+		int i = 0;
+    do {
+	    	if (*ptr == val) {
+	    			return i;
+				}
+				++i;
+    } while (ptr++ != _arrayPtr+size());
+    return -1;
+}
+
+template <typename T>
+void Array<T>::update(const int pos, const T i) {
+    if (empty()) throw ArrayException("Array is empty!");
+    _arrayPtr[pos] = i;
+}
+
+template <typename T>
+void Array<T>::remove(const T val) {
+		if (empty()) throw ArrayException("Array is empty!");
+		int i = linearSearch(val);
+		if (i == -1) return;
+		else if (i = end()) update(end(), 0);
+		else {
+				T* ptr1 = _arrayPtr+i, *ptr2 = ptr1;
+				do {
+					*ptr1++ = *++ptr2;
+				} while (ptr1 != _arrayPtr+end());
+				*ptr1 = 0;
+		}
+}
+```
 
 ```cpp
 int main(int argc, char** argv) {
@@ -214,3 +251,85 @@ int main(int argc, char** argv) {
     return 0;
 }
 ```
+
+## Objective 3: maximum and minimum values of an array
+Write an algorithm and a program that determine the largest and the smallest value in an array of integers *A*. Next, display the value and position of the maximum and minimum. If the array contains several maxima or minima, the program will retain the position of the first maximum or minimum encountered.
+
+```cpp
+template <typename T>
+T& Array<T>::get(const int pos) {
+	if (empty()) throw ArrayException("Array is empty!");
+	return _arrayPtr[pos];
+}
+
+template <typename T>
+int Array<T>::findMin() {
+		if (empty()) throw ArrayException("Array is empty!");
+		T* ptr = _arrayPtr, value = *ptr++;
+		int index, i = 1;
+		do {
+	    	if (*ptr < value) {
+		    		value = *ptr;
+		    		index = i;
+				}
+				++i;
+		} while (ptr++ != _arrayPtr+size());
+	  return index;
+}
+
+template <typename T>
+int Array<T>::findMax() {
+		if (empty()) throw ArrayException("Array is empty!");
+		T* ptr = _arrayPtr, value = *ptr++;
+		int index, i = 1;
+		do {
+	    	if (*ptr > value) {
+	    		value = *ptr;
+	    		index = i;
+				}
+				++i;
+    } while (ptr++ != _arrayPtr+size());
+    return index;
+}
+```
+
+```cpp
+int main(int argc, char** argv) {
+    try {
+        Array<int> A(10);
+
+        // Initialize random seed
+  			srand(time(NULL));
+
+        // Initialize array with random numbers
+        for (int i = 0; i < 10; i++) {
+        		A.push_back(rand() % 100);
+        }
+
+        // Display array
+        cout << "Display array: " << endl;
+        A.display();
+
+        // Find minimum and maximum value
+        int minPos = A.findMin(), maxPos = A.findMax();
+        cout << "The minimum value is " << A.get(minPos) << " and the first occurence is in position " << minPos << endl;
+        cout << "The maximum value is " << A.get(maxPos) << " and the first occurence is in position " << maxPos << endl;
+
+        cin.get();
+
+    } catch (ArrayException& e) {
+        cout << "Array error: " << e.what() << endl;
+    }
+}
+```
+
+## Objective 4: insert a value into a sorted array
+An array *A* of size $$NMAX$$ contains $$N(<NMAX)$$ integer values sorted in ascending order; the $$(N+1)^{th}$$ value is undefined. Write an algorithm and a program that inserts a given *VAL* value from keyboard in the array *A* to obtain an array of $$N+1$$ sorted values.
+
+## Objective 5: find a value in an array
+Write an algorithm and a program that search in an array of integers a $$VAL$$ value entered from the keyboard by using a serial searching. Display the position of *VAL* if it is in the table, otherwise display a corresponding message. The *POS* value that is used to memorize the position of the value in the array, will have the value -1 as long as *VAL* was not found.
+
+Do the same but by using a binary search.
+
+## Objective 6
+Write an algorithm and a program to find the most existing element in an array of integers.
