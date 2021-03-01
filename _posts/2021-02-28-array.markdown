@@ -380,9 +380,142 @@ int main(int argc, char** argv) {
 }
 ```
 ## Objective 5: find a value in an array
-Write an algorithm and a program that search in an array of integers a $$VAL$$ value entered from the keyboard by using a serial searching. Display the position of *VAL* if it is in the table, otherwise display a corresponding message. The *POS* value that is used to memorize the position of the value in the array, will have the value -1 as long as *VAL* was not found.
+Write an algorithm and a program that search in an array of integers a $$VAL$$ value entered from the keyboard by using a serial searching. Display the position of *VAL* if it is in the table, otherwise display a corresponding message. The *POS* value that is used to memorize the position of the value in the array, will have the value -1 as long as *VAL* was not found. Do the same but by using a binary search.
 
-Do the same but by using a binary search.
+```cpp
+template <typename T>
+void Array<T>::selectionSort() {
+		if (empty()) throw ArrayException("Array is empty!");
+		T* ptr1 = _arrayPtr, *ptr2 = ptr1, *ptr3 = _arrayPtr+size(), *ptr4, temp;
+		while (ptr2 != ptr3) {
+				ptr4 = ptr2;
+				ptr1 = ptr2+1;
+				do {
+						if (*ptr1 < *ptr4)
+								ptr4 = ptr1;
+				} while (ptr1++ != ptr3);
+				temp = *ptr2;
+				*ptr2++ = *ptr4;
+				*ptr4 = temp;
+		}
+}
 
+template <typename T>
+int Array<T>::binarySearch(const T val, const int low, const int high) {
+		if (empty()) throw ArrayException("Array is empty!");
+		if (low > high)
+				return -1;
+		int mid = static_cast<int>((low+high)/2);
+		T* ptr = _arrayPtr;
+		if (*(ptr+mid) == val)
+				return mid;
+		if (*(ptr+mid) < val)
+				binarySearch(val, mid+1, high);
+		else
+				binarySearch(val, low, mid-1);
+}
+```
+
+```cpp
+int main(int argc, char** argv) {
+    try {
+        Array<int> A(10);
+
+        // Initialize random seed
+  			srand(time(NULL));
+
+        // Initialize array with random numbers
+        for (int i = 0; i < 10; i++)
+        		A.push_back(rand() % 100);
+
+        // Display array
+        cout << "Display array: " << endl;
+        A.display();
+
+        // Sort array
+        A.selectionSort();
+        cout << "Display array after sorting: " << endl;
+        A.display();
+
+				// Ask for value to search
+        int val;
+        cout << "Please enter a interger to search: ";
+        cin >> val;
+
+        // Search value
+        int pos1, pos2;
+        pos1 = A.linearSearch(val);
+        pos2 = A.binarySearch(val, 0, A.end());
+
+        if (pos1 != -1) {
+        		cout << "Value found by linear search in position " << pos1 << endl;
+				} else {
+						cout << "Value not found by linear search, position returns " << pos1 << endl;
+				}
+
+				if (pos2 != -1) {
+		        cout << "Value found by binary search in position " << pos2 << endl;
+				} else {
+						cout << "Value not found by binary search, position returns " << pos2 << endl;
+				}
+
+        cin.get();
+
+    } catch (ArrayException& e) {
+        cout << "Array error: " << e.what() << endl;
+    }
+}
+```
 ## Objective 6
 Write an algorithm and a program to find the most existing element in an array of integers.
+```cpp
+template <typename T>
+T Array<T>::findMost() {
+		if (empty()) throw ArrayException("Array is empty!");
+		Array<T> valueArray(size());
+		Array<int> counterArray(size());
+		T* ptr = _arrayPtr;
+		valueArray.push_back(*ptr++);
+		counterArray.push_back(1);
+		int pos, counter;
+		do {
+				pos = valueArray.linearSearch(*ptr);
+				if (pos == -1) {
+						valueArray.push_back(*ptr);
+						counterArray.push_back(1);
+				}
+				else {
+						counterArray.get(pos)++;
+				}
+		} while (ptr++ != _arrayPtr+size());
+		pos = counterArray.findMax();
+		return valueArray.get(pos);
+}
+```
+
+```cpp
+int main(int argc, char** argv) {
+    try {
+        Array<int> A(10);
+
+        // Initialize random seed
+  			srand(time(NULL));
+
+        // Initialize array with random numbers
+        for (int i = 0; i < 10; i++)
+        		A.push_back(rand() % 10);
+
+        // Display array
+        cout << "Display array: " << endl;
+        A.display();
+
+				// Find most existing value
+				cout << "The most exsiting value is " << A.findMost() << endl;
+
+        cin.get();
+
+    } catch (ArrayException & e) {
+        cout << "Array error: " << e.what() << endl;
+    }
+}
+```
